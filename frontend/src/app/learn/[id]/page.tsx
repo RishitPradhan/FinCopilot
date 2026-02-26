@@ -7,6 +7,7 @@ import { ChevronLeft, BookOpen, BrainCircuit, CheckCircle2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Quiz } from '@/components/learn/Quiz';
+import { BasicsOfStocksContent } from '@/components/learn/BasicsOfStocksContent';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -16,26 +17,64 @@ const mockModule = {
     id: '1',
     title: 'Basics of Stocks',
     content: `
-# Introduction to the Stock Market
+# Why Do Companies Need Investors?
 
-The stock market is a complex ecosystem where investors buy and sell shares of publicly traded companies. Understanding the basics is the first step toward financial intelligence.
+Every company needs money to run — for salaries, products, and growth. Sometimes, profits aren't enough.
+So, they invite people like us to invest money in their business. In return, we get a share of their success — literally!
 
-## What is a Stock?
-A stock (also known as equity) is a security that represents the ownership of a fraction of a corporation. This entitles the owner of the stock to a proportion of the corporation's assets and profits equal to how much stock they own.
+## 📈 What Are Stocks?
 
-## Why do Companies Issue Stocks?
-Companies issue stock to raise capital to:
-* Expand their operations
-* Invest in new projects
-* Pay off debt
+Think of a stock as a tiny piece of a company.
+When you buy a stock, you become a part-owner of that company.
+If the company grows and earns more — your piece (your stock) becomes more valuable.
 
-## Key Terms to Know
-1. **Dividend**: A portion of a company's earnings distributed to shareholders.
-2. **Market Cap**: The total value of a company's shares.
-3. **IPO**: Initial Public Offering - when a company first sells shares to the public.
+### ✅ In short:
+You invest → company grows → your money grows too.
 
-### How Prices are Determined
-Stock prices are driven by supply and demand. If more people want to buy a stock than sell it, the price moves up. If more people want to sell than buy, the price moves down.
+## 🏛️ What Is the Stock Market?
+
+The stock market is where people buy and sell these shares.
+You can think of it like a big marketplace — but instead of fruits or clothes, people trade ownership in companies.
+
+- **Share Market** → Trading only company shares.
+- **Stock Market** → Includes shares, mutual funds, bonds, and more.
+
+## ⚙️ How Does It Work?
+
+1. Companies list themselves on the stock market to raise money (this is called an **IPO**).
+2. Investors buy those shares.
+3. As companies grow, the value of shares usually rises → investors earn profits or dividends.
+
+📊 Historically, stock markets have given about 10% returns per year over time — better than most savings accounts!
+
+## 🧠 Must-Know Terms for Beginners
+
+| Term | Meaning |
+|------|---------|
+| Sensex | Top 30 companies on the BSE (Bombay Stock Exchange). |
+| Nifty 50 | Top 50 companies on the NSE (National Stock Exchange). |
+| SEBI | The watchdog — it makes sure everything is fair and safe. |
+| Demat Account | Your digital locker for holding shares. |
+| IPO (Initial Public Offer) | When a company sells its shares to the public for the first time. |
+| Bull Market 🐂 | Prices going up — investors are excited! |
+| Bear Market 🐻 | Prices falling — investors are cautious. |
+| Dividend | A reward or profit share paid by the company to its shareholders. |
+| Broker | The middleman (or app) that helps you buy and sell stocks. |
+
+## 🏦 Types of Stock Markets
+
+- **Primary Market** → Where companies sell shares for the first time (IPO).
+- **Secondary Market** → Where investors trade those shares among themselves.
+
+## 📊 Quick Example
+
+If you buy a share of Tata Motors for ₹500 and later it rises to ₹600 — you earn ₹100 profit per share 💸.
+If the company gives a ₹10 dividend, that's a bonus!
+
+## 🌟 Final Thought
+
+The stock market isn't a get-rich-quick game — it's a smart way to grow your wealth over time.
+Start small, learn daily, and let your money work for you!
   `,
     questions: [
         {
@@ -127,14 +166,18 @@ export default function ModuleDetailPage() {
 
             {view === 'content' ? (
                 <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-2xl">
-                    <article className="prose prose-invert prose-neutral max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {module.content}
-                        </ReactMarkdown>
-                    </article>
+                    {id === '1' ? (
+                        <BasicsOfStocksContent />
+                    ) : (
+                        <article className="prose prose-invert prose-neutral max-w-none text-white prose-headings:!text-white prose-p:!text-white prose-li:!text-white prose-strong:!text-white prose-td:!text-white prose-th:!text-white prose-blockquote:!text-white prose-code:!text-white [&_*]:!text-white">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {module.content}
+                            </ReactMarkdown>
+                        </article>
+                    )}
 
                     <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
-                        <div className="flex items-center text-gray-400 text-sm">
+                        <div className="flex items-center text-white text-sm">
                             <CheckCircle2 className="h-4 w-4 text-white mr-2" />
                             Finished reading? Test your knowledge.
                         </div>
