@@ -10,6 +10,7 @@ import { Quiz } from '@/components/learn/Quiz';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { BasisOfStockInteractive } from '@/components/learn/BasisOfStockInteractive';
 
 // Mock data for a module
 const mockModule = {
@@ -126,26 +127,30 @@ export default function ModuleDetailPage() {
             </div>
 
             {view === 'content' ? (
-                <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-2xl">
-                    <article className="prose prose-invert prose-neutral max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {module.content}
-                        </ReactMarkdown>
-                    </article>
+                id === '1' ? (
+                    <BasisOfStockInteractive />
+                ) : (
+                    <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-2xl">
+                        <article className="prose prose-invert prose-neutral max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {module.content}
+                            </ReactMarkdown>
+                        </article>
 
-                    <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
-                        <div className="flex items-center text-gray-400 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-white mr-2" />
-                            Finished reading? Test your knowledge.
+                        <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
+                            <div className="flex items-center text-gray-400 text-sm">
+                                <CheckCircle2 className="h-4 w-4 text-white mr-2" />
+                                Finished reading? Test your knowledge.
+                            </div>
+                            <Button
+                                onClick={() => setView('quiz')}
+                                className="bg-white text-black hover:bg-gray-200 font-bold px-8"
+                            >
+                                Take Module Quiz <BrainCircuit className="ml-2 h-4 w-4" />
+                            </Button>
                         </div>
-                        <Button
-                            onClick={() => setView('quiz')}
-                            className="bg-white text-black hover:bg-gray-200 font-bold px-8"
-                        >
-                            Take Module Quiz <BrainCircuit className="ml-2 h-4 w-4" />
-                        </Button>
                     </div>
-                </div>
+                )
             ) : (
                 <div className="max-w-2xl mx-auto py-8">
                     <Quiz questions={module.questions} onComplete={handleQuizComplete} />

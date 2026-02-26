@@ -13,15 +13,33 @@ interface AuthState {
     token: string | null;
     setAuth: (user: User, token: string) => void;
     logout: () => void;
+    getEffectiveUser: () => User;
+    getEffectiveToken: () => string;
 }
+
+const MOCK_USER: User = {
+    id: '69a04a42080b05c1d9f4',
+    name: 'Wizard (Dev)',
+    email: 'wizard@fincopilot.com',
+    riskAppetite: 'Moderate'
+};
+
+// In development, we can default to a mock user to remove friction
+const isDev = process.env.NODE_ENV === 'development';
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set) => ({
-            user: null,
-            token: null,
+        (set, get) => ({
+            user: isDev ? MOCK_USER : null,
+            token: isDev ? 'dev-token' : null,
             setAuth: (user, token) => set({ user, token }),
-            logout: () => set({ user: null, token: null }),
+            logout: () => {
+                // Clear storage so dev-mode doesn't auto-re-login on refresh if user explicitly logged out
+                localStorage.removeItem('auth-storage');
+                set({ user: null, token: null });
+            },
+            getEffectiveUser: () => get().user || MOCK_USER,
+            getEffectiveToken: () => get().token || 'dev-token',
         }),
         {
             name: 'auth-storage',

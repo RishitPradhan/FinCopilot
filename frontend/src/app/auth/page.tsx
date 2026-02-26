@@ -81,6 +81,18 @@ export default function AuthPage() {
         }
     };
 
+    const handleDevBypass = () => {
+        const mockUser: any = {
+            id: '69a04a42080b05c1d9f4',
+            name: 'Wizard (Dev)',
+            email: 'wizard@fincopilot.com',
+            riskAppetite: 'Moderate'
+        };
+        setAuth(mockUser, 'dev-token');
+        addNotification('info', 'Dev Mode: Logged in as Wizard');
+        router.push('/dashboard');
+    };
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-black text-white selection:bg-white selection:text-black">
             {/* Background decorative elements */}
@@ -283,6 +295,16 @@ export default function AuthPage() {
                         </AnimatePresence>
                     </Tabs>
                 </Card>
+
+                <div className="mt-4">
+                    <Button
+                        variant="ghost"
+                        onClick={handleDevBypass}
+                        className="w-full text-neutral-600 hover:text-white hover:bg-neutral-900/50 text-[10px] uppercase tracking-[0.2em] font-black h-9 border border-neutral-900/50"
+                    >
+                        Skip for Development →
+                    </Button>
+                </div>
 
                 <motion.p
                     initial={{ opacity: 0 }}

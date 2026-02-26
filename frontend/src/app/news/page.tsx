@@ -1,268 +1,262 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, RotateCcw, Newspaper, BarChart3, Clock, Tag, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { fetchStockNews, NewsArticle } from '@/services/newsContent';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { CardTitle } from '@/components/ui/card';
 import {
-    Search,
-    Filter,
-    TrendingUp,
-    TrendingDown,
-    Minus,
-    ExternalLink,
-    Newspaper,
-    BarChart3,
-    Calendar
-} from 'lucide-react';
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Legend
-} from 'recharts';
-import Link from 'next/link';
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import api from '@/services/api';
+import { formatDistanceToNow } from 'date-fns';
 
-// Mock news data
-const mockNews = [
-    {
-        id: 1,
-        headline: "Apple's New AI Strategy Could Drive Upgrade Cycle",
-        source: "Bloomberg",
-        date: "2024-05-22",
-        sentimentValue: 85,
-        sentiment: 'Positive',
-        summary: "Analysts expect Apple's upcoming integration of generative AI across its device ecosystem to trigger a massive upgrade cycle among existing iPhone users.",
-        stock: 'AAPL'
-    },
-    {
-        id: 2,
-        headline: "Tesla Faces Growing Competition in Chinese EV Market",
-        source: "Reuters",
-        date: "2024-05-21",
-        sentimentValue: 35,
-        sentiment: 'Negative',
-        summary: "Tesla's market share in China continues to be pressured by local rivals like BYD and Xiaomi, who are launching more affordable models with advanced tech.",
-        stock: 'TSLA'
-    },
-    {
-        id: 3,
-        headline: "Federal Reserve Signals Potential Rate Cut in Q4",
-        source: "Financial Times",
-        date: "2024-05-22",
-        sentimentValue: 55,
-        sentiment: 'Neutral',
-        summary: "The latest FOMC meeting minutes suggest that the Fed is becoming more confident that inflation is cooling, opening the door for a rate cut later this year.",
-        stock: 'NIFTY50'
-    }
-];
+const SECTORS = ['All Sectors', 'Technology', 'Banking', 'Energy', 'Pharma', 'FMCG', 'Auto', 'Realty', 'Metal', 'IT'];
+const TIME_RANGES = ['Today', 'This Week', 'This Month'];
+const NEWS_TYPES = ['All Types', 'Earnings', 'Mergers', 'Market Updates', 'IPO', 'Dividends', 'Analyst Ratings'];
 
-// Mock correlation data
-const correlationData = [
-    { date: '05-15', sentiment: 45, price: 172 },
-    { date: '05-16', sentiment: 52, price: 174 },
-    { date: '05-17', sentiment: 48, price: 173 },
-    { date: '05-18', sentiment: 65, price: 178 },
-    { date: '05-19', sentiment: 78, price: 182 },
-    { date: '05-20', sentiment: 82, price: 185 },
-    { date: '05-21', sentiment: 75, price: 183 },
-    { date: '05-22', sentiment: 88, price: 188 },
-];
+// Custom Fonts
+const serifFont = "font-serif"; // Playfair Display (mapped in globals.css)
+const monoFont = "font-mono"; // IBM Plex Mono (mapped in globals.css)
+const sansFont = "font-sans"; // IBM Plex Sans (mapped in globals.css)
 
 export default function NewsPage() {
-    const [newsList, setNewsList] = useState<any[]>(mockNews);
+    const [news, setNews] = useState<NewsArticle[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedStock, setSelectedStock] = useState('ALL');
+    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const [selectedSector, setSelectedSector] = useState('All Sectors');
+    const [selectedTimeRange, setSelectedTimeRange] = useState('Today');
+    const [selectedNewsType, setSelectedNewsType] = useState('All Types');
+
+    // Debounce handle
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const loadNews = async () => {
+        setIsLoading(true);
+        setIsError(false);
+        try {
+            const data = await fetchStockNews({
+                query: debouncedQuery,
+                sector: selectedSector,
+                timeRange: selectedTimeRange,
+                newsType: selectedNewsType
+            });
+            setNews(data);
+        } catch (error) {
+            console.error('Failed to load news:', error);
+            setIsError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchNews = async () => {
-            try {
-                const res = await api.get('/news', { params: { stock: selectedStock === 'ALL' ? '' : selectedStock } });
-                if (res.data && res.data.length > 0) {
-                    setNewsList([...res.data, ...mockNews]);
-                } else {
-                    setNewsList(mockNews);
-                }
-            } catch (e) {
-                setNewsList(mockNews);
+        loadNews();
+    }, [debouncedQuery, selectedSector, selectedTimeRange, selectedNewsType]);
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
             }
-        };
-        fetchNews();
-    }, [selectedStock]);
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-20">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">News Intelligence</h1>
-                    <p className="text-gray-400">AI-powered sentiment analysis and market correlation mapping.</p>
-                </div>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative w-full md:w-64">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                        <Input
-                            placeholder="Search news..."
-                            className="pl-10 bg-secondary border-border text-white focus:ring-white"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex bg-card border border-border rounded-lg p-1 shadow-md">
-                        {['ALL', 'AAPL', 'TSLA', 'GOOGL'].map((stock) => (
-                            <button
-                                key={stock}
-                                onClick={() => setSelectedStock(stock)}
-                                className={cn(
-                                    "px-3 py-1 text-xs font-bold rounded-md transition-all",
-                                    selectedStock === stock ? "bg-white text-black" : "text-gray-400 hover:text-white"
-                                )}
-                            >
-                                {stock}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+        <div className="min-h-screen bg-black text-white relative overflow-hidden pb-12">
+            {/* Background Gradient - Removed colors for monochrome theme */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px] opacity-10" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px] opacity-10" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* News List */}
-                <div className="lg:col-span-2 space-y-6">
-                    {newsList.map((news) => (
-                        <Card key={news.id} className="bg-card border-border hover:border-white/30 transition-all group cursor-pointer overflow-hidden shadow-xl">
-                            <div className="flex flex-col md:flex-row">
-                                <div className="p-6 flex-1 space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center space-x-3">
-                                            <Badge className={cn(
-                                                "font-bold uppercase text-[10px] bg-white text-black"
-                                            )}>
-                                                {news.sentiment}
-                                            </Badge>
-                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{news.source}</span>
-                                        </div>
-                                        <span className="text-xs text-gray-600 font-mono">{news.date}</span>
-                                    </div>
-                                    <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{news.headline}</h3>
-                                    <p className="text-sm text-gray-400 line-clamp-2">{news.summary}</p>
-                                    <div className="pt-2 flex items-center justify-between">
-                                        <div className="flex space-x-4 items-center">
-                                            <div className="flex items-center text-white font-bold text-xs">
-                                                <BarChart3 className="h-3 w-3 mr-1" /> {news.stock}
-                                            </div>
-                                            <div className="flex items-center text-gray-500 text-xs">
-                                                Sentiment Score: <span className={cn("ml-1 font-mono font-bold text-white")}>{news.sentimentValue}%</span>
-                                            </div>
-                                        </div>
-                                        <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                                            Read More <ExternalLink className="ml-2 h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                {/* Visual side strip */}
-                                <div className={cn(
-                                    "w-1 md:w-1.5 shrink-0 bg-white/20"
-                                )} />
-                            </div>
-                        </Card>
-                    ))}
+            <div className="max-w-6xl mx-auto px-6 relative z-10 pt-8">
+                {/* Unified Header & Controls */}
+                <div className="mb-12 flex flex-col gap-6">
+                    {/* Search Bar */}
+                    <div className="relative max-w-2xl w-full mx-auto">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
+                        <Input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search market intelligence..."
+                            className="w-full bg-white/5 border-white/10 h-14 pl-12 pr-4 rounded-2xl text-lg focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all placeholder:text-neutral-600 shadow-2xl backdrop-blur-md"
+                        />
+                    </div>
+
+                    {/* Market Intelligence Control Bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-1 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-md">
+                        {/* Sector Dropdown */}
+                        <div className="flex flex-col gap-1 px-3 py-2">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Sector</label>
+                            <Select value={selectedSector} onValueChange={setSelectedSector}>
+                                <SelectTrigger className="bg-transparent border-none p-0 h-auto text-sm font-bold hover:text-white transition-colors focus:ring-0">
+                                    <SelectValue placeholder="All Sectors" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-neutral-900 border-white/10 text-white">
+                                    {SECTORS.map(s => (
+                                        <SelectItem key={s} value={s} className="focus:bg-white focus:text-black">
+                                            {s}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* News Type Dropdown */}
+                        <div className="flex flex-col gap-1 px-3 py-2 border-l border-white/5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Intel Category</label>
+                            <Select value={selectedNewsType} onValueChange={setSelectedNewsType}>
+                                <SelectTrigger className="bg-transparent border-none p-0 h-auto text-sm font-bold hover:text-white transition-colors focus:ring-0">
+                                    <SelectValue placeholder="All Types" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-neutral-900 border-white/10 text-white">
+                                    {NEWS_TYPES.map(t => (
+                                        <SelectItem key={t} value={t} className="focus:bg-white focus:text-black">
+                                            {t}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Time Range Dropdown */}
+                        <div className="flex flex-col gap-1 px-3 py-2 border-l border-white/5">
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Time Horizon</label>
+                            <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+                                <SelectTrigger className="bg-transparent border-none p-0 h-auto text-sm font-bold hover:text-white transition-colors focus:ring-0">
+                                    <SelectValue placeholder="Today" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-neutral-900 border-white/10 text-white">
+                                    {TIME_RANGES.map(r => (
+                                        <SelectItem key={r} value={r} className="focus:bg-white focus:text-black">
+                                            {r}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Intelligence Panel */}
-                <div className="space-y-6">
-                    <Card className="bg-card border-border shadow-xl">
-                        <CardHeader>
-                            <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <Newspaper className="h-4 w-4 mr-2 text-white" />
-                                Daily Sentiment Trend
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-xs font-bold uppercase">
-                                    <span className="text-gray-500 tracking-widest">Market Mood</span>
-                                    <span className="text-white">Bullish 72%</span>
-                                </div>
-                                <Progress value={72} className="h-2 bg-secondary" />
-                            </div>
+                {/* Results Count */}
+                <div className="flex items-center justify-between mb-6 px-2">
+                    <p className={cn("text-[10px] tracking-[0.2em] font-black text-neutral-500 uppercase", monoFont)}>
+                        Found {news.length} Intelligence Markers
+                    </p>
+                    {isLoading && <Loader2 className="w-4 h-4 animate-spin text-neutral-500" />}
+                </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-3 rounded-lg bg-secondary border border-border">
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Impact News</p>
-                                    <p className="text-xl font-bold text-white">24</p>
+                {/* Feed Content */}
+                {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="h-[220px] rounded-2xl bg-white/5 border border-white/10 animate-pulse flex flex-col p-6 gap-4">
+                                <div className="flex gap-2">
+                                    <div className="w-16 h-5 bg-white/10 rounded-md" />
+                                    <div className="w-24 h-5 bg-white/10 rounded-md" />
                                 </div>
-                                <div className="p-3 rounded-lg bg-secondary border border-border">
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Volatility</p>
-                                    <p className="text-xl font-bold text-white">Med</p>
-                                </div>
+                                <div className="w-full h-8 bg-white/10 rounded-md" />
+                                <div className="w-[80%] h-4 bg-white/10 rounded-md" />
+                                <div className="w-full h-4 bg-white/10 rounded-md" />
                             </div>
-
-                            <div className="pt-4 space-y-3 border-t border-border">
-                                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Sentiment by Stock</h4>
-                                {[
-                                    { name: 'AAPL', score: 85, trend: 'up' },
-                                    { name: 'TSLA', score: 32, trend: 'down' },
-                                    { name: 'GOOGL', score: 58, trend: 'up' },
-                                ].map((item) => (
-                                    <div key={item.name} className="flex items-center justify-between">
-                                        <span className="text-sm font-bold text-white">{item.name}</span>
-                                        <div className="flex items-center space-x-3">
-                                            <span className={cn(
-                                                "text-xs font-mono font-bold text-white"
-                                            )}>{item.score}%</span>
-                                            {item.trend === 'up' ? <TrendingUp className="h-3 w-3 text-white" /> : <TrendingDown className="h-3 w-3 text-gray-500" />}
+                        ))}
+                    </div>
+                ) : isError ? (
+                    <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                        <AlertCircle className="w-12 h-12 text-white/20 mb-4" />
+                        <h3 className="text-xl font-bold mb-2">Neural Link Interrupted</h3>
+                        <p className="text-neutral-500 text-sm mb-6">Failed to authenticate with intelligence network.</p>
+                        <Button onClick={loadNews} className="bg-white text-black hover:bg-neutral-200">
+                            <RotateCcw className="w-4 h-4 mr-2" /> Retry Connection
+                        </Button>
+                    </div>
+                ) : news.length === 0 ? (
+                    <div className="text-center py-24 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                        <p className="text-neutral-400 font-bold mb-1">No results found</p>
+                        <p className="text-neutral-600 text-xs">Try adjusting your filters or search query.</p>
+                    </div>
+                ) : (
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
+                        {news.map((item) => (
+                            <motion.div
+                                key={item.id}
+                                variants={itemVariants}
+                                whileHover={{ y: -5, boxShadow: '0 0 30px rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255,255,255,0.2)' }}
+                                className="group bg-white/[0.035] border border-white/[0.07] rounded-3xl p-6 transition-all backdrop-blur-xl relative flex flex-col h-full"
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <Badge className={cn("bg-white/10 text-white border-none font-black tracking-widest text-[10px]", monoFont)}>
+                                            {item.ticker}
+                                        </Badge>
+                                        <div className={cn(
+                                            "flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-tighter",
+                                            item.sentiment === 'positive' ? "bg-white text-black" :
+                                                item.sentiment === 'negative' ? "bg-white/20 text-white" :
+                                                    "bg-neutral-500/10 text-neutral-500"
+                                        )}>
+                                            {item.sentiment} {item.change && `(${item.change})`}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    <div className="text-[10px] text-neutral-600 font-bold flex items-center gap-1">
+                                        <Clock className="w-3 h-3" />
+                                        {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
+                                    </div>
+                                </div>
 
-                    <Card className="bg-card border-border shadow-xl">
-                        <CardHeader>
-                            <CardTitle className="text-lg text-white font-bold">Price-Sentiment Correlation</CardTitle>
-                            <CardDescription className="text-[10px] uppercase">NIFTY50 Sentiment vs Price</CardDescription>
-                        </CardHeader>
-                        <CardContent className="h-[200px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={correlationData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                                    <XAxis dataKey="date" hide />
-                                    <YAxis yAxisId="left" hide domain={['auto', 'auto']} />
-                                    <YAxis yAxisId="right" hide domain={['auto', 'auto']} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
-                                    />
-                                    <Line
-                                        yAxisId="left"
-                                        type="monotone"
-                                        dataKey="sentiment"
-                                        stroke="#fff"
-                                        strokeWidth={2}
-                                        dot={false}
-                                        name="Sentiment Score"
-                                    />
-                                    <Line
-                                        yAxisId="right"
-                                        type="monotone"
-                                        dataKey="price"
-                                        stroke="#888"
-                                        strokeWidth={2}
-                                        dot={false}
-                                        name="Stock Price"
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </div>
+                                <CardTitle className={cn("text-2xl mb-3 leading-tight text-white group-hover:text-white transition-colors", serifFont)}>
+                                    {item.headline}
+                                </CardTitle>
+
+                                <p className={cn("text-neutral-400 text-sm leading-relaxed mb-4 line-clamp-3", sansFont)}>
+                                    {item.summary}
+                                </p>
+
+                                <div className="mt-auto pt-6 flex items-center justify-between border-t border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                                            <Newspaper className="w-4 h-4 text-neutral-500" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-widest font-black text-white">{item.source}</p>
+                                            <p className="text-[9px] text-neutral-600 uppercase font-bold">{item.newsType}</p>
+                                        </div>
+                                    </div>
+                                    <Badge variant="outline" className="border-white/10 text-neutral-500 text-[9px] font-black uppercase group-hover:bg-white group-hover:text-black transition-all">
+                                        {item.sector}
+                                    </Badge>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                )}
             </div>
         </div>
     );

@@ -2,6 +2,22 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const authMiddleware = async (req, res, next) => {
+    // Dev Mode Bypass
+    if (process.env.NODE_ENV === 'development' && (!req.headers.authorization || req.headers.authorization === 'Bearer dev-token')) {
+        try {
+            // Find a default user (Financial Wizard) to act as the session user
+            let user = await User.findOne({ email: 'wizard@fincopilot.com' });
+            if (!user) user = await User.findOne(); // Fallback to any user
+
+            if (user) {
+                req.user = user;
+                return next();
+            }
+        } catch (e) {
+            console.error('Dev bypass failed:', e);
+        }
+    }
+
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
