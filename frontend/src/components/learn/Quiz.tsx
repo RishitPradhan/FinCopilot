@@ -89,7 +89,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                         <div className="absolute text-2xl font-bold font-mono">{percentage}%</div>
                     </div>
                     <div className="text-center">
-                        <p className="text-gray-400">You scored {score} out of {questions.length} questions correctly.</p>
+                        <p className="text-white">You scored {score} out of {questions.length} questions correctly.</p>
                         <p className="mt-2 text-white font-bold italic">
                             {percentage >= 80 ? 'Excellent! You have mastered this module.' : 'Good effort! Review the content and try again for a perfect score.'}
                         </p>
@@ -113,7 +113,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
         <Card className="bg-card border-border text-white shadow-xl">
             <CardHeader>
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Question {currentQuestion + 1} of {questions.length}</span>
+                    <span className="text-xs font-bold text-white uppercase tracking-widest">Question {currentQuestion + 1} of {questions.length}</span>
                     <div className="h-1.5 w-32 bg-secondary rounded-full overflow-hidden">
                         <div
                             className="h-full bg-white transition-all duration-300"
@@ -147,7 +147,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                                     >
                                         <span className="text-sm">{option}</span>
                                         {isCorrect && <CheckCircle2 className="h-5 w-5 text-white" />}
-                                        {isWrong && <XCircle className="h-5 w-5 text-gray-500" />}
+                                        {isWrong && <XCircle className="h-5 w-5 text-white" />}
                                     </Label>
                                 </div>
                             );
