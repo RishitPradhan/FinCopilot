@@ -9,8 +9,9 @@ import { Toaster } from '@/components/ui/toaster';
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAuthPage = pathname === '/auth';
+    const isLandingPage = pathname === '/';
 
-    if (isAuthPage) {
+    if (isAuthPage || isLandingPage) {
         return (
             <main className="min-h-screen bg-black">
                 {children}

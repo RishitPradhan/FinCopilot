@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, RotateCcw, Newspaper, BarChart3, Clock, Tag, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, RotateCcw, Newspaper, BarChart3, Clock, Tag, ChevronRight, AlertCircle, Loader2, AlertTriangle, History as HistoryIcon } from 'lucide-react';
 import { fetchStockNews, NewsArticle } from '@/services/newsContent';
+import { analyzeNewsForAlerts } from '@/services/alertService';
+import { useAlertStore } from '@/store/useAlertStore';
+import { DrasticEventAlert } from '@/components/news/DrasticEventAlert';
 import { Badge } from '@/components/ui/badge';
 import { CardTitle } from '@/components/ui/card';
 import {
@@ -45,6 +48,9 @@ export default function NewsPage() {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
+    const { addAlerts, alerts, markAllAsRead } = useAlertStore();
+    const [showHistory, setShowHistory] = useState(false);
+
     const loadNews = async () => {
         setIsLoading(true);
         setIsError(false);
@@ -56,6 +62,14 @@ export default function NewsPage() {
                 newsType: selectedNewsType
             });
             setNews(data);
+
+            // Hook: Analyze for Drastic Events
+            if (data.length > 0) {
+                const newAlerts = await analyzeNewsForAlerts(data);
+                if (newAlerts.length > 0) {
+                    addAlerts(newAlerts);
+                }
+            }
         } catch (error) {
             console.error('Failed to load news:', error);
             setIsError(true);
@@ -91,9 +105,75 @@ export default function NewsPage() {
                 <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px] opacity-10" />
             </div>
 
+            <DrasticEventAlert />
+
             <div className="max-w-6xl mx-auto px-6 relative z-10 pt-8">
                 {/* Unified Header & Controls */}
                 <div className="mb-12 flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Newspaper className="w-8 h-8 text-white" />
+                            <h1 className={cn("text-4xl font-black uppercase tracking-tighter italic", serifFont)}>Market Intelligence</h1>
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                setShowHistory(!showHistory);
+                                markAllAsRead();
+                            }}
+                            className="bg-white/5 border-white/10 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest gap-2"
+                        >
+                            <HistoryIcon className="w-4 h-4" /> Alert History
+                        </Button>
+                    </div>
+
+                    {/* Alert History Log (Expandable) */}
+                    <AnimatePresence>
+                        {showHistory && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden mb-4"
+                            >
+                                <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 space-y-4">
+                                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-neutral-500">Drastic Event Log</h3>
+                                        <p className="text-[9px] font-bold text-neutral-600 uppercase italic">Past 24 Hours</p>
+                                    </div>
+                                    {alerts.length === 0 ? (
+                                        <p className="text-center py-8 text-neutral-600 text-xs italic">No high-impact events recorded recently.</p>
+                                    ) : (
+                                        <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
+                                            {alerts.map(alert => (
+                                                <div key={alert.id} className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/5 group hover:border-white/20 transition-all">
+                                                    <div className={cn(
+                                                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                                                        alert.severity === 'Critical' ? "bg-red-500/20 text-red-500" : "bg-yellow-500/20 text-yellow-500"
+                                                    )}>
+                                                        <AlertTriangle className="w-4 h-4" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <span className={cn(
+                                                                "text-[9px] font-black uppercase tracking-tighter",
+                                                                alert.severity === 'Critical' ? "text-red-500" : "text-yellow-500"
+                                                            )}>{alert.severity}</span>
+                                                            <span className="text-[9px] font-bold text-neutral-600">• {alert.affectedSector}</span>
+                                                            <span className="ml-auto text-[8px] font-bold text-neutral-700">{formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true })}</span>
+                                                        </div>
+                                                        <p className="text-sm font-bold text-white mb-1 truncate">{alert.headline}</p>
+                                                        <p className="text-[10px] text-neutral-500 line-clamp-1">{alert.description}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                     {/* Search Bar */}
                     <div className="relative max-w-2xl w-full mx-auto">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />

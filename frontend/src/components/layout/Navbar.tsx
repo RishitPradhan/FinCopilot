@@ -15,9 +15,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Bell, Search, TrendingUp, Wallet } from 'lucide-react';
 
+import { useAlertStore } from '@/store/useAlertStore';
+
 export function Navbar() {
     const { user, logout } = useAuthStore();
     const { currentValue } = usePortfolioStore();
+    const { getUnreadCount } = useAlertStore();
+    const unreadCount = getUnreadCount();
 
     return (
         <div className="h-16 border-b border-border bg-background/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
@@ -50,8 +54,13 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-secondary">
+                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-secondary relative">
                         <Bell className="h-5 w-5" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-black text-white">
+                                {unreadCount}
+                            </span>
+                        )}
                     </Button>
 
                     <DropdownMenu>

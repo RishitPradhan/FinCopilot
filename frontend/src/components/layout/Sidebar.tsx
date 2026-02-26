@@ -16,11 +16,13 @@ import {
     Bot
 } from 'lucide-react';
 
+import { useAlertStore } from '@/store/useAlertStore';
+
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Learn', href: '/learn', icon: BookOpen },
     { name: 'Predict', href: '/predict', icon: TrendingUp },
-    { name: 'News', href: '/news', icon: Newspaper },
+    { name: 'News', href: '/news', icon: Newspaper, badge: true },
     { name: 'Portfolio', href: '/portfolio', icon: PieChart },
     { name: 'Community', href: '/community', icon: MessageSquare },
     { name: 'AI Advisor', href: '/advisor', icon: Bot },
@@ -29,6 +31,8 @@ const navigation = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const { getUnreadCount } = useAlertStore();
+    const unreadCount = getUnreadCount();
 
     return (
         <div className="flex h-full w-64 flex-col bg-background border-r border-border">
@@ -43,12 +47,14 @@ export function Sidebar() {
             <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto no-scrollbar">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href;
+                    const hasBadge = item.badge && unreadCount > 0;
+
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
                             className={cn(
-                                'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+                                'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 relative',
                                 isActive
                                     ? 'bg-secondary text-primary'
                                     : 'text-gray-400 hover:text-white hover:bg-secondary'
@@ -62,6 +68,12 @@ export function Sidebar() {
                                 aria-hidden="true"
                             />
                             {item.name}
+                            {hasBadge && (
+                                <span className="absolute right-3 flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                            )}
                         </Link>
                     );
                 })}
