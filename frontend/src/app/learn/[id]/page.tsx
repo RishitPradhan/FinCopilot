@@ -99,7 +99,7 @@ export default function ModuleDetailPage() {
                     <ChevronLeft className="mr-2 h-4 w-4" /> Back to Academy
                 </Button>
                 <div className="flex items-center space-x-2">
-                    <BookOpen className="h-4 w-4 text-[#00d4ff]" />
+                    <BookOpen className="h-4 w-4 text-white" />
                     <span className="text-sm font-medium text-gray-500">Module {id}</span>
                 </div>
             </div>
@@ -110,37 +110,37 @@ export default function ModuleDetailPage() {
                     <div className="flex items-center text-xs text-gray-500 uppercase tracking-widest">
                         <div className={cn(
                             "w-2 h-2 rounded-full mr-2",
-                            view === 'content' ? "bg-[#00d4ff]" : "bg-gray-700"
+                            view === 'content' ? "bg-white" : "bg-gray-700"
                         )} />
                         Reading Content
                     </div>
                     <div className="flex items-center text-xs text-gray-500 uppercase tracking-widest">
                         <div className={cn(
                             "w-2 h-2 rounded-full mr-2",
-                            view === 'quiz' ? "bg-[#00d4ff]" : "bg-gray-700"
+                            view === 'quiz' ? "bg-white" : "bg-gray-700"
                         )} />
                         Module Quiz
                     </div>
                 </div>
-                <Progress value={view === 'content' ? 50 : 100} className="h-1 bg-[#1f2937]" />
+                <Progress value={view === 'content' ? 50 : 100} className="h-1 bg-secondary" />
             </div>
 
             {view === 'content' ? (
-                <div className="bg-[#111827] border border-[#1f2937] rounded-2xl p-8 md:p-12 shadow-2xl">
-                    <article className="prose prose-invert prose-cyan max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
+                <div className="bg-card border border-border rounded-2xl p-8 md:p-12 shadow-2xl">
+                    <article className="prose prose-invert prose-neutral max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {module.content}
                         </ReactMarkdown>
                     </article>
 
-                    <div className="mt-12 pt-8 border-t border-[#1f2937] flex justify-between items-center">
+                    <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
                         <div className="flex items-center text-gray-400 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-[#10b981] mr-2" />
+                            <CheckCircle2 className="h-4 w-4 text-white mr-2" />
                             Finished reading? Test your knowledge.
                         </div>
                         <Button
                             onClick={() => setView('quiz')}
-                            className="bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold px-8"
+                            className="bg-white text-black hover:bg-gray-200 font-bold px-8"
                         >
                             Take Module Quiz <BrainCircuit className="ml-2 h-4 w-4" />
                         </Button>

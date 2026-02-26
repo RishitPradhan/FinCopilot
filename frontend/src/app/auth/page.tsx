@@ -53,20 +53,20 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0f1e]">
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-black">
             <div className="mb-8 flex items-center space-x-2">
-                <div className="w-10 h-10 rounded-lg bg-[#00d4ff] flex items-center justify-center">
-                    <TrendingUp className="text-[#0a0f1e] w-6 h-6" />
+                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                    <TrendingUp className="text-black w-6 h-6" />
                 </div>
                 <span className="text-white font-bold text-3xl tracking-tight">FinCopilot</span>
             </div>
 
-            <Card className="w-full max-w-md bg-[#111827] border-[#1f2937] text-white">
+            <Card className="w-full max-w-md bg-card border-border text-white shadow-xl">
                 <Tabs defaultValue="login" className="w-full">
                     <CardHeader className="pb-2">
-                        <TabsList className="grid w-full grid-cols-2 bg-[#0a0f1e]">
-                            <TabsTrigger value="login" className="data-[state=active]:bg-[#1f2937] data-[state=active]:text-[#00d4ff]">Login</TabsTrigger>
-                            <TabsTrigger value="signup" className="data-[state=active]:bg-[#1f2937] data-[state=active]:text-[#00d4ff]">Signup</TabsTrigger>
+                        <TabsList className="grid w-full grid-cols-2 bg-black">
+                            <TabsTrigger value="login" className="data-[state=active]:bg-secondary data-[state=active]:text-white">Login</TabsTrigger>
+                            <TabsTrigger value="signup" className="data-[state=active]:bg-secondary data-[state=active]:text-white">Signup</TabsTrigger>
                         </TabsList>
                     </CardHeader>
 
@@ -81,15 +81,15 @@ export default function AuthPage() {
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="name@example.com" className="bg-[#0a0f1e] border-[#1f2937] text-white placeholder:text-gray-600 focus:ring-[#00d4ff]" required />
+                                    <Input id="email" type="email" placeholder="name@example.com" className="bg-secondary border-border text-white placeholder:text-gray-600 focus:ring-white" required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="password">Password</Label>
-                                    <Input id="password" type="password" className="bg-[#0a0f1e] border-[#1f2937] text-white focus:ring-[#00d4ff]" required />
+                                    <Input id="password" type="password" className="bg-secondary border-border text-white focus:ring-white" required />
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold" disabled={isLoading}>
+                                <Button className="w-full bg-white text-black hover:bg-gray-200 font-bold" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Log In'}
                                 </Button>
                             </CardFooter>
@@ -108,24 +108,24 @@ export default function AuthPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="signup-name">Full Name</Label>
-                                        <Input id="signup-name" placeholder="John Doe" className="bg-[#0a0f1e] border-[#1f2937] text-white placeholder:text-gray-600 focus:ring-[#00d4ff]" required />
+                                        <Input id="signup-name" placeholder="John Doe" className="bg-secondary border-border text-white placeholder:text-gray-600 focus:ring-white" required />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="signup-email">Email</Label>
-                                        <Input id="signup-email" type="email" placeholder="name@example.com" className="bg-[#0a0f1e] border-[#1f2937] text-white placeholder:text-gray-600 focus:ring-[#00d4ff]" required />
+                                        <Input id="signup-email" type="email" placeholder="name@example.com" className="bg-secondary border-border text-white placeholder:text-gray-600 focus:ring-white" required />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="signup-password">Password</Label>
-                                    <Input id="signup-password" type="password" className="bg-[#0a0f1e] border-[#1f2937] text-white focus:ring-[#00d4ff]" required />
+                                    <Input id="signup-password" type="password" className="bg-secondary border-border text-white focus:ring-white" required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="risk-appetite">Risk Appetite</Label>
                                     <Select defaultValue="Moderate">
-                                        <SelectTrigger id="risk-appetite" className="bg-[#0a0f1e] border-[#1f2937] text-white">
+                                        <SelectTrigger id="risk-appetite" className="bg-secondary border-border text-white">
                                             <SelectValue placeholder="Select risk level" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-[#111827] border-[#1f2937] text-white">
+                                        <SelectContent className="bg-card border-border text-white">
                                             <SelectItem value="Beginner">Beginner (Safety First)</SelectItem>
                                             <SelectItem value="Moderate">Moderate (Balanced)</SelectItem>
                                             <SelectItem value="Aggressive">Aggressive (Growth)</SelectItem>
@@ -135,7 +135,7 @@ export default function AuthPage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold" disabled={isLoading}>
+                                <Button className="w-full bg-white text-black hover:bg-gray-200 font-bold" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Create Account'}
                                 </Button>
                             </CardFooter>

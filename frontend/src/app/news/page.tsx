@@ -110,19 +110,19 @@ export default function NewsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             placeholder="Search news..."
-                            className="pl-10 bg-[#111827] border-[#1f2937] text-white focus:ring-[#00d4ff]"
+                            className="pl-10 bg-secondary border-border text-white focus:ring-white"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <div className="flex bg-[#111827] border border-[#1f2937] rounded-lg p-1">
+                    <div className="flex bg-card border border-border rounded-lg p-1 shadow-md">
                         {['ALL', 'AAPL', 'TSLA', 'GOOGL'].map((stock) => (
                             <button
                                 key={stock}
                                 onClick={() => setSelectedStock(stock)}
                                 className={cn(
                                     "px-3 py-1 text-xs font-bold rounded-md transition-all",
-                                    selectedStock === stock ? "bg-[#00d4ff] text-[#0a0f1e]" : "text-gray-400 hover:text-white"
+                                    selectedStock === stock ? "bg-white text-black" : "text-gray-400 hover:text-white"
                                 )}
                             >
                                 {stock}
@@ -136,15 +136,13 @@ export default function NewsPage() {
                 {/* News List */}
                 <div className="lg:col-span-2 space-y-6">
                     {newsList.map((news) => (
-                        <Card key={news.id} className="bg-[#111827] border-[#1f2937] hover:border-[#00d4ff]/30 transition-all group cursor-pointer overflow-hidden">
+                        <Card key={news.id} className="bg-card border-border hover:border-white/30 transition-all group cursor-pointer overflow-hidden shadow-xl">
                             <div className="flex flex-col md:flex-row">
                                 <div className="p-6 flex-1 space-y-4">
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center space-x-3">
                                             <Badge className={cn(
-                                                "font-bold uppercase text-[10px]",
-                                                news.sentiment === 'Positive' ? "bg-emerald-500/10 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.1)]" :
-                                                    news.sentiment === 'Negative' ? "bg-red-500/10 text-red-500" : "bg-gray-500/10 text-gray-500"
+                                                "font-bold uppercase text-[10px] bg-white text-black"
                                             )}>
                                                 {news.sentiment}
                                             </Badge>
@@ -152,30 +150,25 @@ export default function NewsPage() {
                                         </div>
                                         <span className="text-xs text-gray-600 font-mono">{news.date}</span>
                                     </div>
-                                    <h3 className="text-xl font-bold text-white group-hover:text-[#00d4ff] transition-colors">{news.headline}</h3>
+                                    <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{news.headline}</h3>
                                     <p className="text-sm text-gray-400 line-clamp-2">{news.summary}</p>
                                     <div className="pt-2 flex items-center justify-between">
                                         <div className="flex space-x-4 items-center">
-                                            <div className="flex items-center text-[#00d4ff] font-bold text-xs">
+                                            <div className="flex items-center text-white font-bold text-xs">
                                                 <BarChart3 className="h-3 w-3 mr-1" /> {news.stock}
                                             </div>
                                             <div className="flex items-center text-gray-500 text-xs">
-                                                Sentiment Score: <span className={cn("ml-1 font-mono font-bold",
-                                                    news.sentimentValue > 60 ? "text-emerald-400" :
-                                                        news.sentimentValue < 40 ? "text-red-400" : "text-orange-400"
-                                                )}>{news.sentimentValue}%</span>
+                                                Sentiment Score: <span className={cn("ml-1 font-mono font-bold text-white")}>{news.sentimentValue}%</span>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm" className="text-[#00d4ff] hover:bg-[#00d4ff]/10">
+                                        <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
                                             Read More <ExternalLink className="ml-2 h-3 w-3" />
                                         </Button>
                                     </div>
                                 </div>
                                 {/* Visual side strip */}
                                 <div className={cn(
-                                    "w-1 md:w-1.5 shrink-0",
-                                    news.sentiment === 'Positive' ? "bg-emerald-500" :
-                                        news.sentiment === 'Negative' ? "bg-red-500" : "bg-gray-500"
+                                    "w-1 md:w-1.5 shrink-0 bg-white/20"
                                 )} />
                             </div>
                         </Card>
@@ -184,10 +177,10 @@ export default function NewsPage() {
 
                 {/* Intelligence Panel */}
                 <div className="space-y-6">
-                    <Card className="bg-[#111827] border-[#1f2937]">
+                    <Card className="bg-card border-border shadow-xl">
                         <CardHeader>
                             <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <Newspaper className="h-4 w-4 mr-2 text-[#00d4ff]" />
+                                <Newspaper className="h-4 w-4 mr-2 text-white" />
                                 Daily Sentiment Trend
                             </CardTitle>
                         </CardHeader>
@@ -195,23 +188,23 @@ export default function NewsPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-xs font-bold uppercase">
                                     <span className="text-gray-500 tracking-widest">Market Mood</span>
-                                    <span className="text-emerald-400">Bullish 72%</span>
+                                    <span className="text-white">Bullish 72%</span>
                                 </div>
-                                <Progress value={72} className="h-2 bg-[#0a0f1e]" />
+                                <Progress value={72} className="h-2 bg-secondary" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-3 rounded-lg bg-[#0a0f1e] border border-[#1f2937]">
+                                <div className="p-3 rounded-lg bg-secondary border border-border">
                                     <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Impact News</p>
                                     <p className="text-xl font-bold text-white">24</p>
                                 </div>
-                                <div className="p-3 rounded-lg bg-[#0a0f1e] border border-[#1f2937]">
+                                <div className="p-3 rounded-lg bg-secondary border border-border">
                                     <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Volatility</p>
-                                    <p className="text-xl font-bold text-orange-400">Med</p>
+                                    <p className="text-xl font-bold text-white">Med</p>
                                 </div>
                             </div>
 
-                            <div className="pt-4 space-y-3 border-t border-[#1f2937]/50">
+                            <div className="pt-4 space-y-3 border-t border-border">
                                 <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Sentiment by Stock</h4>
                                 {[
                                     { name: 'AAPL', score: 85, trend: 'up' },
@@ -222,10 +215,9 @@ export default function NewsPage() {
                                         <span className="text-sm font-bold text-white">{item.name}</span>
                                         <div className="flex items-center space-x-3">
                                             <span className={cn(
-                                                "text-xs font-mono font-bold",
-                                                item.score > 50 ? "text-emerald-400" : "text-red-400"
+                                                "text-xs font-mono font-bold text-white"
                                             )}>{item.score}%</span>
-                                            {item.trend === 'up' ? <TrendingUp className="h-3 w-3 text-emerald-400" /> : <TrendingDown className="h-3 w-3 text-red-400" />}
+                                            {item.trend === 'up' ? <TrendingUp className="h-3 w-3 text-white" /> : <TrendingDown className="h-3 w-3 text-gray-500" />}
                                         </div>
                                     </div>
                                 ))}
@@ -233,7 +225,7 @@ export default function NewsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-[#111827] border-[#1f2937]">
+                    <Card className="bg-card border-border shadow-xl">
                         <CardHeader>
                             <CardTitle className="text-lg text-white font-bold">Price-Sentiment Correlation</CardTitle>
                             <CardDescription className="text-[10px] uppercase">NIFTY50 Sentiment vs Price</CardDescription>
@@ -241,18 +233,18 @@ export default function NewsPage() {
                         <CardContent className="h-[200px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={correlationData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                                     <XAxis dataKey="date" hide />
                                     <YAxis yAxisId="left" hide domain={['auto', 'auto']} />
                                     <YAxis yAxisId="right" hide domain={['auto', 'auto']} />
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#0a0f1e', border: '1px solid #1f2937', color: '#fff' }}
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
                                     />
                                     <Line
                                         yAxisId="left"
                                         type="monotone"
                                         dataKey="sentiment"
-                                        stroke="#00d4ff"
+                                        stroke="#fff"
                                         strokeWidth={2}
                                         dot={false}
                                         name="Sentiment Score"
@@ -261,7 +253,7 @@ export default function NewsPage() {
                                         yAxisId="right"
                                         type="monotone"
                                         dataKey="price"
-                                        stroke="#10b981"
+                                        stroke="#888"
                                         strokeWidth={2}
                                         dot={false}
                                         name="Stock Price"

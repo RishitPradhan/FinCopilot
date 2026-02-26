@@ -28,7 +28,7 @@ const modules = [
         time: '45 mins',
         status: 'completed',
         icon: BookOpen,
-        color: 'text-[#00d4ff]',
+        color: 'text-white',
     },
     {
         id: '2',
@@ -38,7 +38,7 @@ const modules = [
         time: '60 mins',
         status: 'in-progress',
         icon: ShieldCheck,
-        color: 'text-emerald-400',
+        color: 'text-gray-300',
     },
     {
         id: '3',
@@ -48,7 +48,7 @@ const modules = [
         time: '90 mins',
         status: 'unlocked',
         icon: BarChart3,
-        color: 'text-purple-400',
+        color: 'text-gray-400',
     },
     {
         id: '4',
@@ -58,7 +58,7 @@ const modules = [
         time: '120 mins',
         status: 'locked',
         icon: LineChart,
-        color: 'text-orange-400',
+        color: 'text-gray-500',
     },
     {
         id: '5',
@@ -68,7 +68,7 @@ const modules = [
         time: '60 mins',
         status: 'locked',
         icon: BrainCircuit,
-        color: 'text-pink-400',
+        color: 'text-gray-600',
     },
 ];
 
@@ -83,8 +83,8 @@ export default function LearnPage() {
                 <div className="text-right">
                     <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Overall Progress</p>
                     <div className="flex items-center space-x-3">
-                        <Progress value={35} className="w-48 h-2 bg-[#1f2937]" />
-                        <span className="text-sm font-mono text-[#00d4ff] font-bold">35%</span>
+                        <Progress value={35} className="w-48 h-2 bg-secondary" />
+                        <span className="text-sm font-mono text-white font-bold">35%</span>
                     </div>
                 </div>
             </div>
@@ -94,8 +94,8 @@ export default function LearnPage() {
                     <Card
                         key={module.id}
                         className={cn(
-                            "bg-[#111827] border-[#1f2937] transition-all duration-300 flex flex-col h-full",
-                            module.status !== 'locked' ? "hover:border-[#00d4ff]/50 cursor-pointer" : "opacity-60"
+                            "bg-card border-border transition-all duration-300 flex flex-col h-full shadow-xl",
+                            module.status !== 'locked' ? "hover:border-white/50 cursor-pointer" : "opacity-60"
                         )}
                     >
                         <CardHeader>
@@ -106,9 +106,9 @@ export default function LearnPage() {
                                     <module.icon className={cn("h-6 w-6", module.color)} />
                                 </div>
                                 <Badge variant="outline" className={cn(
-                                    "border-[#1f2937] text-[10px] uppercase",
-                                    module.status === 'completed' ? "text-emerald-400" :
-                                        module.status === 'in-progress' ? "text-blue-400" : "text-gray-500"
+                                    "border-border text-[10px] uppercase",
+                                    module.status === 'completed' ? "text-white font-bold" :
+                                        module.status === 'in-progress' ? "text-gray-300" : "text-gray-500"
                                 )}>
                                     {module.status}
                                 </Badge>
@@ -132,13 +132,13 @@ export default function LearnPage() {
                                         <span className="text-gray-500">Progress</span>
                                         <span className="text-white">{module.progress}%</span>
                                     </div>
-                                    <Progress value={module.progress} className="h-1.5 bg-[#0a0f1e]" />
+                                    <Progress value={module.progress} className="h-1.5 bg-black" />
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="pt-4 border-t border-[#1f2937]/50">
+                        <CardFooter className="pt-4 border-t border-border/50">
                             {module.status === 'locked' ? (
-                                <Button disabled className="w-full bg-[#1f2937] text-gray-500">
+                                <Button disabled className="w-full bg-secondary text-gray-500">
                                     <Lock className="h-4 w-4 mr-2" />
                                     Module Locked
                                 </Button>
@@ -147,8 +147,8 @@ export default function LearnPage() {
                                     <Button className={cn(
                                         "w-full font-bold",
                                         module.status === 'completed'
-                                            ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                                            : "bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6]"
+                                            ? "bg-white/10 text-white hover:bg-white/20"
+                                            : "bg-white text-black hover:bg-gray-200"
                                     )}>
                                         {module.status === 'completed' ? (
                                             <><CheckCircle2 className="h-4 w-4 mr-2" /> Review Module</>

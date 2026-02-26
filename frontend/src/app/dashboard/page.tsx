@@ -28,7 +28,7 @@ export default function DashboardPage() {
             change: '+12.5%',
             trend: 'up',
             icon: Wallet,
-            color: 'text-blue-400',
+            color: 'text-white',
         },
         {
             title: 'Prediction Accuracy',
@@ -36,7 +36,7 @@ export default function DashboardPage() {
             change: '+2.4%',
             trend: 'up',
             icon: Target,
-            color: 'text-[#00d4ff]',
+            color: 'text-white',
         },
         {
             title: 'Modules Completed',
@@ -44,7 +44,7 @@ export default function DashboardPage() {
             change: '80%',
             trend: 'neutral',
             icon: BookOpen,
-            color: 'text-[#10b981]',
+            color: 'text-white',
         },
         {
             title: 'Market Mood',
@@ -52,29 +52,29 @@ export default function DashboardPage() {
             change: 'Greed',
             trend: 'up',
             icon: Zap,
-            color: 'text-orange-400',
+            color: 'text-white',
         },
     ];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Welcome Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#111827] to-[#1f2937] p-8 border border-[#1f2937]">
+            <div className="relative overflow-hidden rounded-xl bg-secondary p-8 border border-border shadow-2xl">
                 <div className="relative z-10">
                     <h1 className="text-3xl font-bold text-white mb-2">
-                        Hello, {user?.name?.split(' ')[0] || 'Investor'}. Your Financial IQ Score: <span className="text-[#00d4ff]">{iqScore}</span>
+                        Hello, {user?.name?.split(' ')[0] || 'Investor'}. Your Financial IQ Score: <span className="text-primary">{iqScore}</span>
                     </h1>
                     <p className="text-gray-400 max-w-2xl">
                         You're in the top 15% of investors this week. Your portfolio diversification is looking strong, but keep an eye on your tech sector exposure.
                     </p>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00d4ff]/5 blur-3xl -mr-20 -mt-20 rounded-full" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-3xl -mr-20 -mt-20 rounded-full" />
             </div>
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                    <Card key={stat.title} className="bg-[#111827] border-[#1f2937] hover:border-[#00d4ff]/50 transition-all duration-300">
+                    <Card key={stat.title} className="bg-card border-border hover:border-white/50 transition-all duration-300 shadow-xl">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 {stat.title}
@@ -85,17 +85,17 @@ export default function DashboardPage() {
                             <div className="text-2xl font-bold text-white font-mono">{stat.value}</div>
                             <div className="flex items-center mt-1">
                                 {stat.trend === 'up' ? (
-                                    <ArrowUpRight className="h-4 w-4 text-emerald-400 mr-1" />
+                                    <ArrowUpRight className="h-4 w-4 text-white mr-1" />
                                 ) : stat.trend === 'down' ? (
-                                    <ArrowDownRight className="h-4 w-4 text-red-400 mr-1" />
+                                    <ArrowDownRight className="h-4 w-4 text-gray-400 mr-1" />
                                 ) : null}
                                 <span className={cn(
                                     "text-xs font-medium",
-                                    stat.trend === 'up' ? "text-emerald-400" : stat.trend === 'down' ? "text-red-400" : "text-gray-400"
+                                    stat.trend === 'up' ? "text-white" : stat.trend === 'down' ? "text-gray-400" : "text-gray-400"
                                 )}>
                                     {stat.change}
                                 </span>
-                                <span className="text-[10px] text-gray-600 ml-2 uppercase">vs last week</span>
+                                <span className="text-[10px] text-gray-500 ml-2 uppercase">vs last week</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -105,35 +105,35 @@ export default function DashboardPage() {
             {/* Main Grid Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Market Overview Card - Placeholder for Chart */}
-                <Card className="lg:col-span-2 bg-[#111827] border-[#1f2937] h-[400px] flex flex-col">
+                <Card className="lg:col-span-2 bg-card border-border h-[400px] flex flex-col shadow-xl">
                     <CardHeader>
                         <CardTitle className="text-lg font-bold text-white">Market Overview (NIFTY50)</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 flex items-center justify-center border-t border-[#1f2937]/50">
-                        <div className="flex flex-col items-center text-gray-500">
-                            <TrendingUp className="h-12 w-12 mb-4 opacity-20" />
-                            <p>Market Chart will be rendered here (Recharts)</p>
+                    <CardContent className="flex-1 flex items-center justify-center border-t border-border/50">
+                        <div className="flex flex-col items-center text-gray-700">
+                            <TrendingUp className="h-12 w-12 mb-4 opacity-10" />
+                            <p className="text-gray-500">Market Chart will be rendered here (Recharts)</p>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Recent AI Insight Strip */}
-                <Card className="bg-[#111827] border-[#1f2937] h-[400px] flex flex-col">
+                <Card className="bg-card border-border h-[400px] flex flex-col shadow-xl">
                     <CardHeader>
                         <CardTitle className="text-lg font-bold text-white flex items-center">
-                            <Zap className="h-4 w-4 text-yellow-400 mr-2" />
+                            <Zap className="h-4 w-4 text-white mr-2" />
                             AI Insights
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 space-y-4 overflow-y-auto pr-2">
+                    <CardContent className="flex-1 space-y-4 overflow-y-auto pr-2 no-scrollbar">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="p-4 rounded-xl bg-[#0a0f1e] border border-[#1f2937] hover:bg-[#1f2937]/50 transition-colors cursor-pointer group">
+                            <div key={i} className="p-4 rounded-lg bg-secondary/50 border border-border hover:bg-secondary/80 transition-colors cursor-pointer group">
                                 <div className="flex justify-between items-start mb-2">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 uppercase">Opportunity</span>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">Insight</span>
                                     <span className="text-[10px] text-gray-500">2h ago</span>
                                 </div>
-                                <h3 className="text-sm font-semibold text-white group-hover:text-[#00d4ff] transition-colors">AAPL Consolidation Phase</h3>
-                                <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                                <h3 className="text-sm font-semibold text-white group-hover:text-primary transition-colors">AAPL Consolidation Phase</h3>
+                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                                     Apple stock is showing signs of consolidation. Relative Strength Index (RSI) is at 45, suggesting potential for...
                                 </p>
                             </div>
@@ -143,16 +143,16 @@ export default function DashboardPage() {
             </div>
 
             {/* AI Insight Strip at bottom */}
-            <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-white/5 border border-border flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-blue-500/10">
-                        <Zap className="h-4 w-4 text-blue-400" />
+                    <div className="p-2 rounded-lg bg-white/10">
+                        <Zap className="h-4 w-4 text-white" />
                     </div>
-                    <p className="text-sm text-gray-300">
-                        <span className="font-bold text-white">Pro Tip:</span> Diversifying into renewable energy might reduce your current portfolio volatility by <span className="text-emerald-400 font-bold">14%</span>.
+                    <p className="text-sm text-gray-400">
+                        <span className="font-bold text-white">Pro Tip:</span> Diversifying into renewable energy might reduce your current portfolio volatility by <span className="text-white font-bold">14%</span>.
                     </p>
                 </div>
-                <button className="text-xs font-bold text-[#00d4ff] hover:underline uppercase tracking-wider">Analyze Portfolio</button>
+                <button className="text-xs font-bold text-white hover:underline uppercase tracking-wider">Analyze Portfolio</button>
             </div>
         </div>
     );

@@ -53,9 +53,9 @@ const initialHoldings = [
 ];
 
 const sectorData = [
-    { name: 'Technology', value: 65, color: '#00d4ff' },
-    { name: 'Automotive', value: 15, color: '#10b981' },
-    { name: 'Energy', value: 20, color: '#f59e0b' },
+    { name: 'Technology', value: 65, color: '#ffffff' },
+    { name: 'Automotive', value: 15, color: '#888888' },
+    { name: 'Energy', value: 20, color: '#444444' },
 ];
 
 const performanceData = [
@@ -66,7 +66,7 @@ const performanceData = [
     { month: 'May', value: 68000 },
 ];
 
-const COLORS = ['#00d4ff', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = ['#ffffff', '#bbbbbb', '#888888', '#555555', '#222222'];
 
 export default function PortfolioPage() {
     const [holdings, setHoldings] = useState(initialHoldings);
@@ -83,14 +83,14 @@ export default function PortfolioPage() {
                     <h1 className="text-3xl font-bold text-white mb-2">Portfolio Analyzer</h1>
                     <p className="text-gray-400">Deep dive into your assets and risk profile.</p>
                 </div>
-                <Button className="bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold">
+                <Button className="bg-white text-black hover:bg-gray-200 font-bold">
                     <Plus className="h-4 w-4 mr-2" /> Add New Holding
                 </Button>
             </div>
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-card border-border shadow-xl">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Total Invested</CardDescription>
                     </CardHeader>
@@ -98,7 +98,7 @@ export default function PortfolioPage() {
                         <div className="text-2xl font-bold text-white font-mono">${totalInvested.toLocaleString()}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-card border-border shadow-xl">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Current Value</CardDescription>
                     </CardHeader>
@@ -106,44 +106,44 @@ export default function PortfolioPage() {
                         <div className="text-2xl font-bold text-white font-mono">${currentValue.toLocaleString()}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-card border-border shadow-xl">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Overall P&L</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold font-mono", totalPnL >= 0 ? "text-emerald-400" : "text-red-400")}>
+                        <div className={cn("text-2xl font-bold font-mono text-white")}>
                             {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
                         </div>
-                        <div className={cn("flex items-center text-xs mt-1 font-bold", totalPnL >= 0 ? "text-emerald-400" : "text-red-400")}>
+                        <div className={cn("flex items-center text-xs mt-1 font-bold text-white")}>
                             {totalPnL >= 0 ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
                             {pnlPercent.toFixed(2)}%
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#111827] border-[#1f2937]">
+                <Card className="bg-card border-border shadow-xl">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs font-bold uppercase tracking-widest text-gray-500">Risk Score</CardDescription>
                     </CardHeader>
                     <CardContent className="flex items-center space-x-3">
-                        <div className="text-2xl font-bold text-[#00d4ff] font-mono">68<span className="text-sm text-gray-500 ml-1">/100</span></div>
-                        <Badge className="bg-orange-500/10 text-orange-500 border-none font-bold">Moderate</Badge>
+                        <div className="text-2xl font-bold text-white font-mono">68<span className="text-sm text-gray-500 ml-1">/100</span></div>
+                        <Badge className="bg-white/10 text-white border-none font-bold italic">Moderate</Badge>
                     </CardContent>
                 </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Holdings Table */}
-                <Card className="lg:col-span-2 bg-[#111827] border-[#1f2937]">
-                    <CardHeader className="border-b border-[#1f2937]/50">
+                <Card className="lg:col-span-2 bg-card border-border shadow-xl">
+                    <CardHeader className="border-b border-border/50">
                         <CardTitle className="text-lg text-white font-bold flex items-center">
-                            <Activity className="h-4 w-4 mr-2 text-[#00d4ff]" />
+                            <Activity className="h-4 w-4 mr-2 text-white" />
                             Your Holdings
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
-                            <TableHeader className="border-[#1f2937] hover:bg-transparent">
-                                <TableRow className="border-[#1f2937] hover:bg-transparent">
+                            <TableHeader className="border-border hover:bg-transparent">
+                                <TableRow className="border-border hover:bg-transparent">
                                     <TableHead className="text-gray-500 font-bold">Stock</TableHead>
                                     <TableHead className="text-gray-500 font-bold">Qty</TableHead>
                                     <TableHead className="text-gray-500 font-bold">Buy Price</TableHead>
@@ -156,7 +156,7 @@ export default function PortfolioPage() {
                                     const pnl = (h.currentPrice - h.buyPrice) * h.qty;
                                     const pnlPct = ((h.currentPrice - h.buyPrice) / h.buyPrice) * 100;
                                     return (
-                                        <TableRow key={h.id} className="border-[#1f2937] hover:bg-[#1f2937]/30">
+                                        <TableRow key={h.id} className="border-border hover:bg-secondary/30">
                                             <TableCell>
                                                 <div className="flex flex-col">
                                                     <span className="text-white font-bold">{h.ticker}</span>
@@ -167,10 +167,10 @@ export default function PortfolioPage() {
                                             <TableCell className="text-gray-400 font-mono">${h.buyPrice}</TableCell>
                                             <TableCell className="text-white font-mono font-semibold">${h.currentPrice}</TableCell>
                                             <TableCell className="text-right">
-                                                <div className={cn("text-sm font-bold", pnl >= 0 ? "text-emerald-400" : "text-red-400")}>
+                                                <div className={cn("text-sm font-bold text-white")}>
                                                     {pnl >= 0 ? '+' : ''}${pnl.toLocaleString()}
                                                 </div>
-                                                <div className={cn("text-[10px] font-bold", pnl >= 0 ? "text-emerald-500" : "text-red-500")}>
+                                                <div className={cn("text-[10px] font-bold text-gray-500")}>
                                                     {pnlPct.toFixed(1)}%
                                                 </div>
                                             </TableCell>
@@ -184,10 +184,10 @@ export default function PortfolioPage() {
 
                 {/* Analytics Section */}
                 <div className="space-y-6">
-                    <Card className="bg-[#111827] border-[#1f2937]">
+                    <Card className="bg-card border-border shadow-xl">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <PieChartIcon className="h-4 w-4 mr-2 text-[#00d4ff]" />
+                                <PieChartIcon className="h-4 w-4 mr-2 text-white" />
                                 Sector Allocation
                             </CardTitle>
                         </CardHeader>
@@ -208,7 +208,7 @@ export default function PortfolioPage() {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#0a0f1e', border: '1px solid #1f2937', color: '#fff' }}
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
                                     />
                                     <Legend
                                         verticalAlign="bottom"
@@ -221,11 +221,11 @@ export default function PortfolioPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-[#111827] border-[#1f2937] overflow-hidden">
+                    <Card className="bg-card border-border overflow-hidden shadow-xl">
                         {/* Risk Meter - Custom SVG Gauge */}
                         <CardHeader className="pb-2">
                             <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <ShieldAlert className="h-4 w-4 mr-2 text-orange-400" />
+                                <ShieldAlert className="h-4 w-4 mr-2 text-white" />
                                 Risk Exposure
                             </CardTitle>
                         </CardHeader>
@@ -235,14 +235,14 @@ export default function PortfolioPage() {
                                     <path
                                         d="M 10 45 A 40 40 0 0 1 90 45"
                                         fill="none"
-                                        stroke="#1f2937"
+                                        stroke="#222"
                                         strokeWidth="8"
                                         strokeLinecap="round"
                                     />
                                     <path
                                         d="M 10 45 A 40 40 0 0 1 80 20"
                                         fill="none"
-                                        stroke="#00d4ff"
+                                        stroke="#fff"
                                         strokeWidth="8"
                                         strokeLinecap="round"
                                         strokeDasharray="125"
@@ -263,10 +263,10 @@ export default function PortfolioPage() {
             </div>
 
             {/* Portfolio Growth Chart */}
-            <Card className="bg-[#111827] border-[#1f2937]">
+            <Card className="bg-card border-border shadow-xl">
                 <CardHeader>
                     <CardTitle className="text-xl text-white font-bold flex items-center">
-                        <BarChart3 className="h-4 w-4 mr-2 text-[#00d4ff]" />
+                        <BarChart3 className="h-4 w-4 mr-2 text-white" />
                         Growth Performance
                     </CardTitle>
                     <CardDescription className="text-gray-400 uppercase text-[10px] tracking-widest font-bold">Projected vs Actual Portfolio Value</CardDescription>
@@ -274,13 +274,13 @@ export default function PortfolioPage() {
                 <CardContent className="h-[300px] pt-4">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={performanceData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                             <XAxis dataKey="month" stroke="#4b5563" fontSize={10} axisLine={false} tickLine={false} />
                             <YAxis stroke="#4b5563" fontSize={10} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#0a0f1e', border: '1px solid #1f2937', color: '#fff' }}
+                                contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
                             />
-                            <Line type="monotone" dataKey="value" stroke="#00d4ff" strokeWidth={3} dot={{ fill: '#00d4ff', r: 4 }} activeDot={{ r: 6 }} />
+                            <Line type="monotone" dataKey="value" stroke="#fff" strokeWidth={3} dot={{ fill: '#fff', r: 4 }} activeDot={{ r: 6 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </CardContent>

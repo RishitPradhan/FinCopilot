@@ -58,7 +58,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
     if (isFinished) {
         const percentage = Math.round((score / questions.length) * 100);
         return (
-            <Card className="bg-[#111827] border-[#1f2937] text-white">
+            <Card className="bg-card border-border text-white shadow-xl">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Quiz Completed!</CardTitle>
                 </CardHeader>
@@ -72,7 +72,7 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                                 stroke="currentColor"
                                 strokeWidth="8"
                                 fill="transparent"
-                                className="text-[#1f2937]"
+                                className="text-border"
                             />
                             <circle
                                 cx="64"
@@ -83,23 +83,23 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                                 fill="transparent"
                                 strokeDasharray={Math.PI * 116}
                                 strokeDashoffset={Math.PI * 116 * (1 - percentage / 100)}
-                                className="text-[#00d4ff] transition-all duration-1000"
+                                className="text-white transition-all duration-1000"
                             />
                         </svg>
                         <div className="absolute text-2xl font-bold font-mono">{percentage}%</div>
                     </div>
                     <div className="text-center">
                         <p className="text-gray-400">You scored {score} out of {questions.length} questions correctly.</p>
-                        <p className="mt-2 text-[#10b981] font-semibold">
+                        <p className="mt-2 text-white font-bold italic">
                             {percentage >= 80 ? 'Excellent! You have mastered this module.' : 'Good effort! Review the content and try again for a perfect score.'}
                         </p>
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-center space-x-4">
-                    <Button onClick={resetQuiz} variant="outline" className="border-[#1f2937] hover:bg-[#1f2937]">
+                    <Button onClick={resetQuiz} variant="outline" className="border-border hover:bg-secondary">
                         <RotateCcw className="mr-2 h-4 w-4" /> Try Again
                     </Button>
-                    <Button className="bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold">
+                    <Button className="bg-white text-black hover:bg-gray-200 font-bold">
                         Continue to Next Module
                     </Button>
                 </CardFooter>
@@ -110,13 +110,13 @@ export function Quiz({ questions, onComplete }: QuizProps) {
     const question = questions[currentQuestion];
 
     return (
-        <Card className="bg-[#111827] border-[#1f2937] text-white">
+        <Card className="bg-card border-border text-white shadow-xl">
             <CardHeader>
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Question {currentQuestion + 1} of {questions.length}</span>
-                    <div className="h-1.5 w-32 bg-[#1f2937] rounded-full overflow-hidden">
+                    <div className="h-1.5 w-32 bg-secondary rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-[#00d4ff] transition-all duration-300"
+                            className="h-full bg-white transition-all duration-300"
                             style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
                         />
                     </div>
@@ -135,9 +135,9 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                                     key={index}
                                     className={cn(
                                         "flex items-center space-x-3 p-4 rounded-xl border transition-all",
-                                        isCorrect ? "bg-emerald-500/10 border-emerald-500" :
-                                            isWrong ? "bg-red-500/10 border-red-500" :
-                                                selectedAnswer === index ? "bg-[#1f2937] border-[#00d4ff]" : "bg-[#0a0f1e] border-[#1f2937] hover:bg-[#1f2937]"
+                                        isCorrect ? "bg-white/10 border-white" :
+                                            isWrong ? "bg-white/5 border-gray-700" :
+                                                selectedAnswer === index ? "bg-secondary border-white" : "bg-black border-border hover:bg-secondary"
                                     )}
                                 >
                                     <RadioGroupItem value={index.toString()} id={`q${index}`} className="hidden" />
@@ -146,8 +146,8 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                                         className="flex-1 cursor-pointer flex justify-between items-center"
                                     >
                                         <span className="text-sm">{option}</span>
-                                        {isCorrect && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
-                                        {isWrong && <XCircle className="h-5 w-5 text-red-500" />}
+                                        {isCorrect && <CheckCircle2 className="h-5 w-5 text-white" />}
+                                        {isWrong && <XCircle className="h-5 w-5 text-gray-500" />}
                                     </Label>
                                 </div>
                             );
@@ -160,14 +160,14 @@ export function Quiz({ questions, onComplete }: QuizProps) {
                     <Button
                         onClick={handleSubmit}
                         disabled={selectedAnswer === null}
-                        className="bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold"
+                        className="bg-white text-black hover:bg-gray-200 font-bold"
                     >
                         Submit Answer
                     </Button>
                 ) : (
                     <Button
                         onClick={handleNext}
-                        className="bg-[#00d4ff] text-[#0a0f1e] hover:bg-[#00b8e6] font-bold"
+                        className="bg-white text-black hover:bg-gray-200 font-bold"
                     >
                         {currentQuestion + 1 === questions.length ? 'Finish Quiz' : 'Next Question'} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

@@ -12,7 +12,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
     if (isAuthPage) {
         return (
-            <main className="min-h-screen bg-[#0a0f1e]">
+            <main className="min-h-screen bg-black">
                 {children}
                 <Toaster />
             </main>
@@ -20,11 +20,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="flex h-screen bg-[#0a0f1e] overflow-hidden">
+        <div className="flex h-screen bg-black overflow-hidden">
             <Sidebar />
             <div className="flex flex-col flex-1 overflow-hidden">
                 <Navbar />
-                <main className="flex-1 overflow-y-auto p-8 relative">
+                <main className="flex-1 overflow-y-auto p-8 relative no-scrollbar">
                     <div className="max-w-7xl mx-auto w-full">
                         {children}
                     </div>
