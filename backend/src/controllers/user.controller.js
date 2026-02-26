@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const LearningProgress = require('../models/LearningProgress');
 const Portfolio = require('../models/Portfolio');
+const CommunityPost = require('../models/CommunityPost');
 
 const userController = {
     getIqScore: async (req, res, next) => {
@@ -26,6 +27,23 @@ const userController = {
                     totalHoldings: portfolioCount,
                     rank: 'Silver' // Mock rank
                 }
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getPublicProfile: async (req, res, next) => {
+        try {
+            const user = await User.findById(req.params.id).select('name email riskAppetite iqScore createdAt');
+            if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+            const posts = await CommunityPost.find({ author: req.params.id }).sort({ createdAt: -1 });
+
+            res.json({
+                success: true,
+                user,
+                posts
             });
         } catch (error) {
             next(error);

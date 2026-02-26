@@ -5,5 +5,6 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 router.get('/iq-score', authMiddleware, userController.getIqScore);
 router.get('/summary', authMiddleware, userController.getSummary);
+router.get('/profile/:id', authMiddleware, userController.getPublicProfile);
 
 module.exports = router;

@@ -12,7 +12,8 @@ import {
     PieChart,
     MessageSquare,
     UserCircle,
-    Microscope
+    Microscope,
+    Bot
 } from 'lucide-react';
 
 const navigation = [
@@ -21,7 +22,8 @@ const navigation = [
     { name: 'Predict', href: '/predict', icon: TrendingUp },
     { name: 'News', href: '/news', icon: Newspaper },
     { name: 'Portfolio', href: '/portfolio', icon: PieChart },
-    { name: 'AI Advisor', href: '/advisor', icon: MessageSquare },
+    { name: 'Community', href: '/community', icon: MessageSquare },
+    { name: 'AI Advisor', href: '/advisor', icon: Bot },
     { name: 'Deep Dive Analysis', href: '/deep-dive', icon: Microscope },
 ];
 

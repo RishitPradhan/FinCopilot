@@ -11,7 +11,12 @@ const authController = {
                 return res.status(400).json({ success: false, message: 'User already exists' });
             }
 
-            const user = new User({ name, email, password, riskAppetite });
+            const user = new User({
+                name,
+                email,
+                password,
+                riskAppetite: riskAppetite ? riskAppetite.toLowerCase() : 'moderate'
+            });
             await user.save();
 
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
