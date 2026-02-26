@@ -140,7 +140,7 @@ export default function AdvisorPage() {
                     </CardHeader>
 
                     <CardContent className="flex-1 overflow-hidden p-0 relative">
-                        <ScrollArea className="h-full px-6 py-8" ref={scrollRef}>
+                        <ScrollArea className="h-full px-6 py-8 no-scrollbar" ref={scrollRef}>
                             <div className="space-y-8 pb-4">
                                 {messages.map((msg) => (
                                     <div

@@ -11,7 +11,8 @@ import {
     Newspaper,
     PieChart,
     MessageSquare,
-    UserCircle
+    UserCircle,
+    Microscope
 } from 'lucide-react';
 
 const navigation = [
@@ -21,6 +22,7 @@ const navigation = [
     { name: 'News', href: '/news', icon: Newspaper },
     { name: 'Portfolio', href: '/portfolio', icon: PieChart },
     { name: 'AI Advisor', href: '/advisor', icon: MessageSquare },
+    { name: 'Deep Dive Analysis', href: '/deep-dive', icon: Microscope },
 ];
 
 export function Sidebar() {
@@ -36,7 +38,7 @@ export function Sidebar() {
                     <span className="text-white font-bold text-xl tracking-tight">FinCopilot</span>
                 </Link>
             </div>
-            <nav className="flex-1 space-y-1 px-3 py-4">
+            <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto no-scrollbar">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
