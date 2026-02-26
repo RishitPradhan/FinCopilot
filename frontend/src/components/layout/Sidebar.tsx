@@ -35,7 +35,7 @@ export function Sidebar() {
     const unreadCount = getUnreadCount();
 
     return (
-        <div className="flex h-full w-64 flex-col bg-background border-r border-border">
+        <div className="flex h-full w-64 flex-col bg-background border-r border-white/5">
             <div className="flex h-16 shrink-0 items-center px-6">
                 <Link href="/dashboard" className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
@@ -78,8 +78,8 @@ export function Sidebar() {
                     );
                 })}
             </nav>
-            <div className="p-4 border-t border-border">
-                <div className="flex items-center p-3 rounded-xl bg-card border border-border">
+            <div className="p-4 mt-auto border-t border-white/5">
+                <div className="flex items-center p-3 rounded-xl bg-card">
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Market Mood</p>
                         <p className="text-sm font-medium text-white">Bullish +4.2%</p>

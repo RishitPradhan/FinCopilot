@@ -82,120 +82,133 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="flex-1 bg-black text-white p-6 overflow-y-auto no-scrollbar">
-            <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex-1 bg-black text-white p-10 overflow-y-auto no-scrollbar animate-in fade-in duration-1000">
+            <div className="max-w-5xl mx-auto space-y-12">
                 {/* Back Button */}
                 <Button
                     variant="ghost"
                     onClick={() => router.back()}
-                    className="text-neutral-500 hover:text-white px-0 font-bold uppercase tracking-widest text-[10px]"
+                    className="text-gray-700 hover:text-white px-0 font-black uppercase tracking-[0.3em] text-[10px] transition-all hover:gap-4 flex items-center gap-3"
                 >
-                    <ArrowLeft className="w-3 h-3 mr-2" /> Back to Exploratory
+                    <ArrowLeft className="w-4 h-4" /> Back to Exploratory
                 </Button>
 
                 {/* Profile Header */}
-                <Card className="bg-neutral-950 border-neutral-900 overflow-hidden">
-                    <div className="h-32 bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 border-b border-neutral-800" />
-                    <CardContent className="relative px-8 pb-8">
-                        <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12">
-                            <Avatar className="w-24 h-24 border-4 border-black ring-1 ring-neutral-800">
-                                <AvatarFallback className="bg-neutral-900 text-3xl font-bold text-white">
-                                    {profile.name[0]}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 space-y-1">
-                                <div className="flex items-center gap-3">
-                                    <h1 className="text-3xl font-bold tracking-tighter">{profile.name}</h1>
-                                    <Badge variant="secondary" className="bg-white text-black font-bold uppercase text-[10px] tracking-widest rounded-full px-3">
-                                        Pro Member
+                <Card className="premium-card overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+                    <div className="h-48 bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent border-b border-white/5 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent)] opacity-50" />
+                    </div>
+                    <CardContent className="relative px-12 pb-12">
+                        <div className="flex flex-col md:flex-row md:items-end gap-10 -mt-20">
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ type: "spring", damping: 15 }}
+                            >
+                                <Avatar className="w-40 h-40 border-8 border-black shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+                                    <AvatarFallback className="bg-white text-black text-5xl font-black italic">
+                                        {profile.name[0]}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </motion.div>
+                            <div className="flex-1 space-y-3 pb-2">
+                                <div className="flex items-center gap-5">
+                                    <h1 className="text-5xl font-black tracking-tighter italic uppercase">{profile.name}</h1>
+                                    <Badge variant="secondary" className="bg-white text-black font-black uppercase text-[10px] tracking-[0.2em] rounded-full px-5 py-1.5 shadow-2xl">
+                                        PRO SENTINEL
                                     </Badge>
                                 </div>
-                                <p className="text-neutral-500 text-sm">{profile.email}</p>
+                                <p className="text-gray-600 text-sm font-black uppercase tracking-[0.3em] ml-1">{profile.email}</p>
                             </div>
-                            <div className="flex gap-2">
-                                <Button className="bg-white text-black hover:bg-neutral-200 font-bold px-8 rounded-full uppercase text-xs">
-                                    Message
+                            <div className="flex gap-4 pb-2">
+                                <Button className="bg-white text-black hover:bg-gray-200 font-black px-10 h-14 rounded-2xl uppercase text-[11px] tracking-[0.2em] shadow-2xl transition-all active:scale-95">
+                                    Initialize Secure Comms
                                 </Button>
                             </div>
                         </div>
 
-                        <Separator className="my-8 bg-neutral-900" />
-
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold flex items-center gap-2">
-                                    <TrendingUp className="w-3 h-3" /> Risk Appetite
+                        <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-12 bg-white/[0.01] border border-white/5 p-10 rounded-[32px] shadow-inner">
+                            <div className="space-y-2">
+                                <p className="text-[9px] uppercase tracking-[0.3em] text-gray-700 font-black flex items-center gap-3">
+                                    <TrendingUp className="w-3.5 h-3.5" /> Risk Appetite
                                 </p>
-                                <p className="text-lg font-bold capitalize">{profile.riskAppetite}</p>
+                                <p className="text-xl font-black text-white italic uppercase tracking-tighter">{profile.riskAppetite}</p>
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold flex items-center gap-2">
-                                    <Award className="w-3 h-3" /> Financial IQ
+                            <div className="space-y-2 border-l border-white/5 pl-12">
+                                <p className="text-[9px] uppercase tracking-[0.3em] text-gray-700 font-black flex items-center gap-3">
+                                    <Award className="w-3.5 h-3.5" /> Quant IQ
                                 </p>
-                                <p className="text-lg font-bold">{profile.iqScore}</p>
+                                <p className="text-xl font-black text-white font-mono">{profile.iqScore}</p>
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold flex items-center gap-2">
-                                    <Calendar className="w-3 h-3" /> Joined
+                            <div className="space-y-2 border-l border-white/5 pl-12">
+                                <p className="text-[9px] uppercase tracking-[0.3em] text-gray-700 font-black flex items-center gap-3">
+                                    <Calendar className="w-3.5 h-3.5" /> Commissioned
                                 </p>
-                                <p className="text-lg font-bold">{new Date(profile.createdAt).toLocaleDateString()}</p>
+                                <p className="text-xl font-black text-white italic tracking-tighter uppercase">{new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold flex items-center gap-2">
-                                    <ShieldCheck className="w-3 h-3" /> Status
+                            <div className="space-y-2 border-l border-white/5 pl-12">
+                                <p className="text-[9px] uppercase tracking-[0.3em] text-gray-700 font-black flex items-center gap-3">
+                                    <ShieldCheck className="w-3.5 h-3.5" /> Alignment
                                 </p>
-                                <p className="text-lg font-bold">Verified</p>
+                                <p className="text-xl font-black text-white italic uppercase tracking-tighter">Verified Alpha</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Activity Feed */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight">Recent Insights</h2>
-                        <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold bg-neutral-900 px-3 py-1 rounded-full">{posts.length} Posts</span>
+                <div className="space-y-10">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                        <h2 className="text-2xl font-black tracking-tighter uppercase italic">Strategic Output</h2>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-700 bg-white/[0.03] border border-white/5 px-5 py-2 rounded-full">{posts.length} TRANSMISSIONS</span>
                     </div>
 
                     {posts.length === 0 ? (
-                        <div className="text-center py-20 border border-dashed border-neutral-900 rounded-3xl">
-                            <p className="text-neutral-500 text-sm">No community activity yet.</p>
+                        <div className="text-center py-28 border border-dashed border-white/5 rounded-[48px] bg-white/[0.01]">
+                            <p className="text-gray-700 text-[10px] font-black uppercase tracking-[0.4em]">Zero Active Transmissions Detected</p>
                         </div>
                     ) : (
-                        <div className="grid gap-6">
-                            {posts.map((post) => (
-                                <Card key={post._id} className="bg-neutral-950 border-neutral-900 hover:border-neutral-800 transition-colors group">
-                                    <CardHeader className="pb-2">
-                                        <div className="flex justify-between items-start">
-                                            <CardTitle className="text-lg font-bold leading-tight group-hover:text-primary transition-colors cursor-pointer">
-                                                {post.title}
-                                            </CardTitle>
-                                            <span className="text-[10px] text-neutral-600 font-mono whitespace-nowrap">
-                                                {new Date(post.createdAt).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-neutral-400 text-sm line-clamp-3 leading-relaxed">
-                                            {post.content}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2 mt-4">
-                                            {post.tags.map(tag => (
-                                                <span key={tag} className="text-[10px] text-neutral-700 font-bold">#{tag}</span>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="pt-0 flex items-center gap-4 text-neutral-600">
-                                        <div className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors">
-                                            <Heart className="w-3.5 h-3.5" />
-                                            <span className="text-[10px] font-bold">{post.likes.length}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors">
-                                            <MessageCircle className="w-3.5 h-3.5" />
-                                            <span className="text-[10px] font-bold">{post.comments.length}</span>
-                                        </div>
-                                    </CardFooter>
-                                </Card>
+                        <div className="grid gap-8">
+                            {posts.map((post, idx) => (
+                                <motion.div
+                                    key={post._id}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: idx * 0.1 }}
+                                >
+                                    <Card className="premium-card hover:border-white/20 transition-all duration-700 group cursor-pointer overflow-hidden p-0">
+                                        <CardHeader className="p-10 pb-4">
+                                            <div className="flex justify-between items-start gap-10">
+                                                <CardTitle className="text-2xl font-black italic tracking-tighter uppercase transition-colors group-hover:text-white">
+                                                    {post.title}
+                                                </CardTitle>
+                                                <span className="text-[10px] text-gray-700 font-black uppercase tracking-widest whitespace-nowrap bg-white/[0.03] px-4 py-1.5 rounded-full border border-white/5">
+                                                    {new Date(post.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
+                                                </span>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="px-10">
+                                            <p className="text-gray-400 text-sm font-medium leading-[1.8] line-clamp-3">
+                                                {post.content}
+                                            </p>
+                                            <div className="flex flex-wrap gap-4 mt-8">
+                                                {post.tags.map(tag => (
+                                                    <span key={tag} className="text-[9px] text-gray-700 font-black uppercase tracking-[0.2em] px-3 py-1 bg-white/[0.02] rounded-md border border-white/5">#{tag}</span>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="p-10 pt-6 flex items-center gap-10 border-t border-white/5 bg-white/[0.01]">
+                                            <div className="flex items-center gap-2.5 cursor-pointer text-gray-600 hover:text-white transition-all group/stat">
+                                                <Heart className="w-4 h-4 transition-transform group-hover/stat:scale-125" />
+                                                <span className="text-[11px] font-black">{post.likes.length}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2.5 cursor-pointer text-gray-600 hover:text-white transition-all group/stat">
+                                                <MessageCircle className="w-4 h-4 transition-transform group-hover/stat:scale-125" />
+                                                <span className="text-[11px] font-black">{post.comments.length}</span>
+                                            </div>
+                                        </CardFooter>
+                                    </Card>
+                                </motion.div>
                             ))}
                         </div>
                     )}

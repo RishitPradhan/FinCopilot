@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const modules = [
     {
@@ -74,88 +75,109 @@ const modules = [
 
 export default function LearnPage() {
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex justify-between items-end">
+        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-10">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Learning Academy</h1>
-                    <p className="text-gray-400">Master the markets with our structured AI-driven curriculum.</p>
+                    <h1 className="text-5xl font-black text-white mb-3 tracking-tighter uppercase italic">Academy</h1>
+                    <p className="text-gray-500 uppercase tracking-[0.3em] text-[10px] font-black">AI-Driven Financial Intelligence Curriculum</p>
                 </div>
-                <div className="text-right">
-                    <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Overall Progress</p>
-                    <div className="flex items-center space-x-3">
-                        <Progress value={35} className="w-48 h-2 bg-secondary" />
-                        <span className="text-sm font-mono text-white font-bold">35%</span>
+                <div className="w-full md:w-auto">
+                    <div className="flex justify-between items-end mb-3">
+                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Overall Mastery</p>
+                        <span className="text-sm font-black text-white italic">35%</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="h-2 w-64 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: "35%" }}
+                                className="h-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-1000"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {modules.map((module) => (
                     <Card
                         key={module.id}
                         className={cn(
-                            "bg-card border-border transition-all duration-300 flex flex-col h-full shadow-xl",
-                            module.status !== 'locked' ? "hover:border-white/50 cursor-pointer" : "opacity-60"
+                            "premium-card group transition-all duration-500 flex flex-col h-full overflow-hidden",
+                            module.status !== 'locked' ? "hover:border-white/20 cursor-pointer shadow-2xl" : "opacity-40 grayscale"
                         )}
                     >
-                        <CardHeader>
-                            <div className="flex justify-between items-start mb-4">
-                                <div className={cn("p-3 rounded-xl bg-opacity-10",
-                                    module.color.replace('text-', 'bg-')
+                        <CardHeader className="bg-white/[0.02] border-b border-white/5 pb-6">
+                            <div className="flex justify-between items-start mb-6">
+                                <div className={cn("p-4 rounded-2xl bg-white/[0.03] border border-white/5 shadow-xl group-hover:border-white/20 transition-all",
+                                    module.color.replace('text-', 'text-')
                                 )}>
-                                    <module.icon className={cn("h-6 w-6", module.color)} />
+                                    <module.icon className={cn("h-6 w-6 shadow-2xl", module.color === 'text-white' ? 'text-white' : 'text-gray-400')} />
                                 </div>
                                 <Badge variant="outline" className={cn(
-                                    "border-border text-[10px] uppercase",
-                                    module.status === 'completed' ? "text-white font-bold" :
-                                        module.status === 'in-progress' ? "text-gray-300" : "text-gray-500"
+                                    "border-white/10 text-[9px] uppercase font-black tracking-widest px-3 py-1 rounded-full",
+                                    module.status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                                        module.status === 'in-progress' ? "bg-white/10 text-white border-white/20" : "text-gray-600"
                                 )}>
                                     {module.status}
                                 </Badge>
                             </div>
-                            <CardTitle className="text-xl text-white">{module.title}</CardTitle>
-                            <CardDescription className="text-gray-400 line-clamp-2">
+                            <CardTitle className="text-2xl font-black text-white tracking-tight leading-tight group-hover:text-primary transition-colors">{module.title}</CardTitle>
+                            <CardDescription className="text-gray-500 line-clamp-2 mt-2 font-medium leading-relaxed">
                                 {module.description}
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1">
-                            <div className="space-y-4">
-                                <div className="flex items-center text-xs text-gray-500">
-                                    <Clock className="h-3 w-3 mr-1" />
-                                    {module.time}
-                                    <div className="mx-2 w-1 h-1 rounded-full bg-gray-700" />
-                                    <BookOpen className="h-3 w-3 mr-1" />
-                                    Quiz Included
-                                </div>
-                                <div className="space-y-1.5">
-                                    <div className="flex justify-between text-[10px] font-semibold uppercase tracking-wider">
-                                        <span className="text-gray-500">Progress</span>
-                                        <span className="text-white">{module.progress}%</span>
+                        <CardContent className="flex-1 p-6 pt-8">
+                            <div className="space-y-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                        <Clock className="h-3.5 w-3.5 mr-2" />
+                                        {module.time}
                                     </div>
-                                    <Progress value={module.progress} className="h-1.5 bg-black" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                                    <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                        <BookOpen className="h-3.5 w-3.5 mr-2" />
+                                        Interactive
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Completion</span>
+                                        <span className="text-xs font-black text-white italic">{module.progress}%</span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${module.progress}%` }}
+                                            className={cn(
+                                                "h-full rounded-full transition-all duration-1000",
+                                                module.status === 'completed' ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "bg-white shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="pt-4 border-t border-border/50">
+                        <CardFooter className="p-6 pt-0 mt-auto">
                             {module.status === 'locked' ? (
-                                <Button disabled className="w-full bg-secondary text-gray-500">
+                                <Button disabled className="w-full bg-white/5 border border-white/5 text-gray-700 font-black uppercase tracking-widest text-[9px] rounded-2xl h-12">
                                     <Lock className="h-4 w-4 mr-2" />
                                     Module Locked
                                 </Button>
                             ) : (
                                 <Link href={`/learn/${module.id}`} className="w-full">
                                     <Button className={cn(
-                                        "w-full font-bold",
+                                        "w-full font-black uppercase tracking-widest text-[10px] rounded-2xl h-14 shadow-2xl transition-all active:scale-[0.98]",
                                         module.status === 'completed'
-                                            ? "bg-white/10 text-white hover:bg-white/20"
+                                            ? "bg-white/[0.03] text-white border border-white/10 hover:bg-white/[0.08]"
                                             : "bg-white text-black hover:bg-gray-200"
                                     )}>
                                         {module.status === 'completed' ? (
-                                            <><CheckCircle2 className="h-4 w-4 mr-2" /> Review Module</>
+                                            <><CheckCircle2 className="h-4 w-4 mr-2 text-emerald-500" /> Review Content</>
                                         ) : module.status === 'in-progress' ? (
-                                            <><PlayCircle className="h-4 w-4 mr-2" /> Continue Learning</>
+                                            <><PlayCircle className="h-4 w-4 mr-2" /> Continue Course</>
                                         ) : (
-                                            <><PlayCircle className="h-4 w-4 mr-2" /> Start Module</>
+                                            <><PlayCircle className="h-4 w-4 mr-2" /> Start Course</>
                                         )}
                                     </Button>
                                 </Link>

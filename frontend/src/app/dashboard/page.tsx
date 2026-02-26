@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import api from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Wallet, TrendingUp, BookOpen, Smile, Zap, ArrowUpRight, ArrowDownRight, LayoutDashboard, BrainCircuit, Target } from 'lucide-react';
+import { Wallet, BookOpen, Zap, ArrowUpRight, ArrowDownRight, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MarketChart } from './MarketChart';
 
 export default function DashboardPage() {
     const { user } = useAuthStore();
@@ -28,7 +29,7 @@ export default function DashboardPage() {
             change: '+12.5%',
             trend: 'up',
             icon: Wallet,
-            color: 'text-white',
+            color: 'text-emerald-400',
         },
         {
             title: 'Prediction Accuracy',
@@ -36,7 +37,7 @@ export default function DashboardPage() {
             change: '+2.4%',
             trend: 'up',
             icon: Target,
-            color: 'text-white',
+            color: 'text-emerald-400',
         },
         {
             title: 'Modules Completed',
@@ -44,58 +45,71 @@ export default function DashboardPage() {
             change: '80%',
             trend: 'neutral',
             icon: BookOpen,
-            color: 'text-white',
+            color: 'text-blue-400',
         },
         {
             title: 'Market Mood',
             value: 'Fear & Greed: 64',
-            change: 'Greed',
-            trend: 'up',
+            change: '-2 pts',
+            trend: 'down',
             icon: Zap,
-            color: 'text-white',
+            color: 'text-rose-400',
         },
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Welcome Banner */}
-            <div className="relative overflow-hidden rounded-xl bg-secondary p-8 border border-border shadow-2xl">
+            <div className="relative overflow-hidden rounded-2xl bg-black p-10 border border-white/5 shadow-2xl">
                 <div className="relative z-10">
-                    <h1 className="text-3xl font-bold text-white mb-2">
-                        Hello, {user?.name?.split(' ')[0] || 'Investor'}. Your Financial IQ Score: <span className="text-primary">{iqScore}</span>
+                    <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
+                        Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-white">{user?.name?.split(' ')[0] || 'Investor'}</span>.
                     </h1>
-                    <p className="text-gray-400 max-w-2xl">
-                        You're in the top 15% of investors this week. Your portfolio diversification is looking strong, but keep an eye on your tech sector exposure.
+                    <div className="flex items-center space-x-4 mb-6">
+                        <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                            <p className="text-sm font-medium text-gray-300">
+                                Financial IQ: <span className="text-primary font-bold">{iqScore}</span>
+                            </p>
+                        </div>
+                        <div className="px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md">
+                            <p className="text-sm font-medium text-emerald-400">Top 15% this week</p>
+                        </div>
+                    </div>
+                    <p className="text-gray-400 max-w-2xl text-lg leading-relaxed">
+                        Your portfolio diversification is looking strong, but keep an eye on your tech sector exposure. Market volatility is expected to increase.
                     </p>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-3xl -mr-20 -mt-20 rounded-full" />
             </div>
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                    <Card key={stat.title} className="bg-card border-border hover:border-white/50 transition-all duration-300 shadow-xl">
+                    <Card key={stat.title} className="bg-card/50 border border-white/5 hover:bg-card/80 transition-all duration-500 shadow-xl backdrop-blur-xl group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <CardTitle className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">
                                 {stat.title}
                             </CardTitle>
-                            <stat.icon className={cn("h-4 w-4", stat.color)} />
+                            <stat.icon className={cn("h-5 w-5 transition-transform duration-500 group-hover:scale-110", stat.color)} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-white font-mono">{stat.value}</div>
-                            <div className="flex items-center mt-1">
+                            <div className="text-3xl font-black text-white font-mono tracking-tighter">{stat.value}</div>
+                            <div className="flex items-center mt-2">
                                 {stat.trend === 'up' ? (
-                                    <ArrowUpRight className="h-4 w-4 text-white mr-1" />
+                                    <div className="flex items-center px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                                        <ArrowUpRight className="h-3 w-3 text-emerald-400 mr-1" />
+                                        <span className="text-xs font-bold text-emerald-400">{stat.change}</span>
+                                    </div>
                                 ) : stat.trend === 'down' ? (
-                                    <ArrowDownRight className="h-4 w-4 text-gray-400 mr-1" />
-                                ) : null}
-                                <span className={cn(
-                                    "text-xs font-medium",
-                                    stat.trend === 'up' ? "text-white" : stat.trend === 'down' ? "text-gray-400" : "text-gray-400"
-                                )}>
-                                    {stat.change}
-                                </span>
-                                <span className="text-[10px] text-gray-500 ml-2 uppercase">vs last week</span>
+                                    <div className="flex items-center px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+                                        <ArrowDownRight className="h-3 w-3 text-rose-400 mr-1" />
+                                        <span className="text-xs font-bold text-rose-400">{stat.change}</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                                        <span className="text-xs font-bold text-blue-400">{stat.change}</span>
+                                    </div>
+                                )}
+                                <span className="text-[10px] text-gray-600 ml-3 uppercase font-bold tracking-wider">vs last week</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -104,37 +118,50 @@ export default function DashboardPage() {
 
             {/* Main Grid Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Market Overview Card - Placeholder for Chart */}
-                <Card className="lg:col-span-2 bg-card border-border h-[400px] flex flex-col shadow-xl">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-bold text-white">Market Overview (NIFTY50)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1 flex items-center justify-center border-t border-border/50">
-                        <div className="flex flex-col items-center text-gray-700">
-                            <TrendingUp className="h-12 w-12 mb-4 opacity-10" />
-                            <p className="text-gray-500">Market Chart will be rendered here (Recharts)</p>
+                {/* Market Overview Card */}
+                <Card className="lg:col-span-2 bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden">
+                    <CardHeader className="border-b border-white/5 bg-white/[0.01]">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <CardTitle className="text-xl font-black text-white tracking-tight">Market Overview</CardTitle>
+                                <p className="text-xs text-gray-500 mt-1 font-medium">NIFTY 50 • REAL-TIME PERFORMANCE</p>
+                            </div>
+                            <div className="flex space-x-2">
+                                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">Live</span>
+                            </div>
                         </div>
+                    </CardHeader>
+                    <CardContent className="flex-1 p-6">
+                        <MarketChart />
                     </CardContent>
                 </Card>
 
-                {/* Recent AI Insight Strip */}
-                <Card className="bg-card border-border h-[400px] flex flex-col shadow-xl">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-bold text-white flex items-center">
-                            <Zap className="h-4 w-4 text-white mr-2" />
-                            AI Insights
+                {/* AI Insights Strip */}
+                <Card className="bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl">
+                    <CardHeader className="border-b border-white/5 bg-white/[0.01]">
+                        <CardTitle className="text-xl font-black text-white flex items-center tracking-tight">
+                            <Zap className="h-5 w-5 text-primary mr-2" />
+                            AI Catalyst
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 space-y-4 overflow-y-auto pr-2 no-scrollbar">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="p-4 rounded-lg bg-secondary/50 border border-border hover:bg-secondary/80 transition-colors cursor-pointer group">
+                    <CardContent className="flex-1 space-y-4 overflow-y-auto p-6 no-scrollbar">
+                        {[
+                            { title: 'AAPL Consolidation', desc: 'Apple stock is showing signs of consolidation near $190 support.', type: 'Neutral', time: '2h ago' },
+                            { title: 'Tech Sector Surge', desc: 'High momentum detected in AI-related stocks following NVIDIA results.', type: 'Bullish', time: '4h ago' },
+                            { title: 'Interest Rate Impact', desc: 'Fed hints at maintaining rates, potentially impacting bank margins.', type: 'Alert', time: '6h ago' }
+                        ].map((insight, i) => (
+                            <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 cursor-pointer group">
                                 <div className="flex justify-between items-start mb-2">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">Insight</span>
-                                    <span className="text-[10px] text-gray-500">2h ago</span>
+                                    <span className={cn(
+                                        "text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter",
+                                        insight.type === 'Bullish' ? "bg-emerald-500/20 text-emerald-400" :
+                                            insight.type === 'Alert' ? "bg-rose-500/20 text-rose-400" : "bg-white/10 text-white"
+                                    )}>{insight.type}</span>
+                                    <span className="text-[9px] font-bold text-gray-600 uppercase">{insight.time}</span>
                                 </div>
-                                <h3 className="text-sm font-semibold text-white group-hover:text-primary transition-colors">AAPL Consolidation Phase</h3>
-                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                                    Apple stock is showing signs of consolidation. Relative Strength Index (RSI) is at 45, suggesting potential for...
+                                <h3 className="text-sm font-bold text-white group-hover:text-primary transition-colors">{insight.title}</h3>
+                                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed font-medium">
+                                    {insight.desc}
                                 </p>
                             </div>
                         ))}
@@ -143,16 +170,19 @@ export default function DashboardPage() {
             </div>
 
             {/* AI Insight Strip at bottom */}
-            <div className="p-4 rounded-xl bg-white/5 border border-border flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-white/10">
-                        <Zap className="h-4 w-4 text-white" />
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-white/5 to-transparent border-none flex items-center justify-between backdrop-blur-sm group transition-colors">
+                <div className="flex items-center space-x-4">
+                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform duration-500">
+                        <Zap className="h-5 w-5 text-primary" />
                     </div>
-                    <p className="text-sm text-gray-400">
-                        <span className="font-bold text-white">Pro Tip:</span> Diversifying into renewable energy might reduce your current portfolio volatility by <span className="text-white font-bold">14%</span>.
-                    </p>
+                    <div>
+                        <p className="text-sm font-bold text-white mb-0.5">Optimization Insight</p>
+                        <p className="text-sm text-gray-400 leading-relaxed font-medium">
+                            Diversifying into renewable energy might reduce your current portfolio volatility by <span className="text-emerald-400 font-black">14.2%</span>.
+                        </p>
+                    </div>
                 </div>
-                <button className="text-xs font-bold text-white hover:underline uppercase tracking-wider">Analyze Portfolio</button>
+                <button className="px-6 py-2 rounded-xl bg-white text-black text-xs font-black hover:bg-white/90 transition-all active:scale-95 uppercase tracking-widest shadow-lg">Analyze Portfolio</button>
             </div>
         </div>
     );

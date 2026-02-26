@@ -1,224 +1,298 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-    Send,
-    Sparkles,
-    User,
-    Bot,
-    Zap,
-    MessageSquare,
-    History,
-    HelpCircle,
-    Lightbulb,
-    ArrowRight,
-    Loader2,
-    Trash2
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/store/useAuthStore';
+import ChatMessage from './components/ChatMessage';
+import BotResponse, { BotResponseData } from './components/BotResponse';
+import ChatInputBar from './components/ChatInputBar';
+import { ArrowUp } from 'lucide-react';
+import api from '@/services/api';
 
 interface Message {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
+    type: 'user' | 'bot';
+    content: string | BotResponseData;
+    timestamp: string;
+    isLoading?: boolean;
 }
 
-const quickPrompts = [
-    "How diversified is my current portfolio?",
-    "Analyze the risk of my Apple (AAPL) holding.",
-    "What is the current market sentiment for TSLA?",
-    "Should I rebalance my portfolio now?",
-    "Explain the impact of the latest Fed rate signals."
-];
-
 export default function AdvisorPage() {
-    const { user } = useAuthStore();
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: '1',
-            role: 'assistant',
-            content: `Hello ${user?.name?.split(' ')[0] || 'Investor'}! I'm your FinCopilot AI advisor. Based on your Moderate risk appetite and current portfolio (heavy in tech), I'm ready to help you optimize your strategy. What would you like to analyze today?`,
-            timestamp: new Date()
-        }
-    ]);
-    const [input, setInput] = useState('');
-    const [isThinking, setIsThinking] = useState(false);
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
 
     useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    }, [messages, isThinking]);
+        scrollToBottom();
+    }, [messages]);
 
-    const handleSend = () => {
-        if (!input.trim() || isThinking) return;
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const response = await api.get('/advisor/history');
+                if (response.data && response.data.history) {
+                    const formattedHistory = response.data.history.map((msg: any) => ({
+                        type: msg.role === 'user' ? 'user' : 'bot',
+                        content: msg.role === 'user' ? msg.content : parseBotResponse(msg.content, extractSymbolFromMessage(msg.content) || 'BAJFINANCE'),
+                        timestamp: new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                    }));
+                    setMessages(formattedHistory);
+                }
+            } catch (err) {
+                console.error('Failed to load chat history', err);
+            }
+        };
+        fetchHistory();
+    }, []);
 
-        const userMsg: Message = {
-            id: Date.now().toString(),
-            role: 'user',
-            content: input,
-            timestamp: new Date()
+    const handleSendMessage = async (userText: string) => {
+        if (!userText.trim()) return;
+
+        const timestamp = new Date().toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const userMessage: Message = {
+            type: 'user',
+            content: userText,
+            timestamp
         };
 
-        setMessages(prev => [...prev, userMsg]);
-        setInput('');
-        setIsThinking(true);
+        setMessages(prev => [...prev, userMessage]);
+        setIsLoading(true);
+        setError(null);
 
-        // Mock AI response
-        setTimeout(() => {
-            const aiMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: `Analyzing your query: "${input}"... Based on current market news and your portfolio data, I recommend looking at your exposure to the technology sector which is currently at 65%. While NIFTY50 is showing bullish signals, diversifying into Energy or Consumer Staples could provide a better risk-adjusted return (Sharpe score improvement of ~0.4).`,
-                timestamp: new Date()
-            };
-            setMessages(prev => [...prev, aiMsg]);
-            setIsThinking(false);
-        }, 2000);
-    };
+        // Placeholder for bot response
+        setMessages(prev => [
+            ...prev,
+            {
+                type: 'bot',
+                content: '',
+                isLoading: true,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+            }
+        ]);
+
+        try {
+            // Direct API call without streaming for simplicity in this implementation
+            const response = await api.post('/advisor/chat', { message: userText });
+            const fullResponseText = response.data.message;
+            const symbol = extractSymbolFromMessage(userText);
+
+            const parsedResponse = parseBotResponse(fullResponseText, symbol, userText);
+
+            setMessages(prev => [
+                ...prev.slice(0, -1),
+                {
+                    type: 'bot',
+                    content: parsedResponse,
+                    isLoading: false,
+                    timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                }
+            ]);
+        } catch (err: any) {
+            setError(err.response?.data?.message || err.message || 'Failed to get response');
+            setMessages(prev => prev.slice(0, -1)); // Remove loading placeholder
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleRetry = () => {
+        if (messages.length > 0) {
+            const lastUserMessage = [...messages].reverse().find(m => m.type === 'user');
+            if (lastUserMessage && typeof lastUserMessage.content === 'string') {
+                setMessages(prev => prev.slice(0, -1)); // Remove the error message
+                handleSendMessage(lastUserMessage.content);
+            }
+        }
+    }
+
+    // Helper functions adapted from ai-server implementation
+    const extractSymbolFromMessage = (text: string) => {
+        const upperText = text.toUpperCase();
+        const symbolMap: Record<string, string[]> = {
+            'LENSKART': ['LENSKART'],
+            'DMART': ['DMART', 'D-MART'],
+            'TCS': ['TCS', 'TATA CONSULTANCY'],
+            'INFY': ['INFY', 'INFOSYS'],
+            'WIPRO': ['WIPRO'],
+            'RELIANCE': ['RELIANCE', 'RIL'],
+            'HDFC': ['HDFC', 'HDFC BANK'],
+            'JIOFINANCE': ['JIOFINANCE', 'JIO FINANCIAL', 'JF'],
+            'BAJFINANCE': ['BAJAJ FINANCE', 'BAJAJ FIN', 'BAJFINANCE']
+        };
+
+        for (const [symbol, variations] of Object.entries(symbolMap)) {
+            for (const variation of variations) {
+                if (upperText.includes(variation)) {
+                    return symbol;
+                }
+            }
+        }
+        return '';
+    }
+
+    const parseBotResponse = (text: string, symbol: string, originalUserText: string = ''): BotResponseData => {
+        const shouldShowChart = text.toLowerCase().includes('chart') ||
+            text.toLowerCase().includes('price') ||
+            text.toLowerCase().includes('technical') ||
+            originalUserText.toLowerCase().includes('chart') ||
+            originalUserText.toLowerCase().includes('plot');
+
+        return {
+            text,
+            showChart: shouldShowChart && symbol !== '',
+            symbol: symbol || undefined,
+            chartData: shouldShowChart ? undefined : undefined, // Will use generated mock data in StockChart
+            snapshot: shouldShowChart ? {
+                'Current Price': '₹' + (Math.random() * 8000 + 1000).toFixed(2),
+                '52W High': '₹' + ((Math.random() * 8000 + 1000) * 1.2).toFixed(2),
+                '52W Low': '₹' + ((Math.random() * 8000 + 1000) * 0.8).toFixed(2),
+                'Volume': (Math.random() * 2 + 1).toFixed(2) + 'M',
+                'P/E Ratio': (Math.random() * 40 + 15).toFixed(2),
+                'Market Cap': '₹' + (Math.random() * 8 + 1).toFixed(2) + 'L Cr'
+            } : undefined,
+            sentiment: shouldShowChart ? {
+                level: Math.random() > 0.6 ? 'bullish' : Math.random() > 0.3 ? 'neutral' : 'bearish',
+                bearish: Math.floor(Math.random() * 5),
+                neutral: Math.floor(Math.random() * 8 + 2),
+                bullish: Math.floor(Math.random() * 10 + 2)
+            } : undefined,
+            events: shouldShowChart ? [
+                { date: '2024-01-15', name: 'Q3 Results', impact: 'Positive earnings beat drove stock up 5%' },
+                { date: '2024-02-01', name: 'CEO Announcement', impact: 'New product launch, bullish for growth' }
+            ] : undefined,
+            relatedQuestions: generateRelatedQuestions(symbol || 'SENSEX'),
+            sources: generateCompanySources(symbol || 'SENSEX')
+        };
+    }
+
+    const generateRelatedQuestions = (symbol: string) => {
+        return [
+            {
+                question: `What are the key metrics for ${symbol}?`,
+                answer: `Key metrics for ${symbol} include the Price-to-Earnings (P/E) ratio, Market Cap, Dividend Yield, and Return on Equity (ROE).`
+            },
+            {
+                question: `How does this compare to competitors?`,
+                answer: `${symbol} demonstrates strong competitive positioning with comparable or superior metrics to its peers.`
+            },
+            {
+                question: `What are the analyst ratings?`,
+                answer: `Most major analysts have positive outlooks on ${symbol} with ratings ranging from "Hold" to "Strong Buy".`
+            }
+        ];
+    }
+
+    const generateCompanySources = (symbol: string) => {
+        const companyNames: Record<string, string> = {
+            'LENSKART': 'Lenskart',
+            'DMART': 'Avenue Supermarts',
+            'TCS': 'Tata Consultancy Services',
+            'INFY': 'Infosys',
+            'RELIANCE': 'Reliance Industries',
+            'BAJFINANCE': 'Bajaj Finance',
+            'SENSEX': 'BSE SENSEX'
+        };
+        const companyName = companyNames[symbol] || symbol;
+
+        return [
+            { title: `${companyName} Stock Overview`, url: `https://www.google.com/finance?q=${encodeURIComponent(companyName)}` },
+            { title: `Latest News on ${companyName}`, url: `https://www.google.com/search?q=${encodeURIComponent(companyName + ' stock market news')}&tbm=nws` },
+            { title: 'Investor Relations & Filings', url: `https://www.google.com/search?q=${encodeURIComponent(companyName + ' investor relations')}` }
+        ];
+    }
 
     return (
-        <div className="h-[calc(100vh-140px)] flex gap-8 animate-in fade-in duration-500">
-            {/* Sidebar - Quick Prompts */}
-            <div className="hidden lg:flex flex-col w-72 shrink-0 space-y-6">
-                <Card className="bg-card border-border flex-1">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center">
-                            <Lightbulb className="h-4 w-4 mr-2 text-white" />
-                            Quick Prompts
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        {quickPrompts.map((prompt, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setInput(prompt)}
-                                className="w-full text-left p-3 rounded-xl bg-secondary border border-border text-xs text-gray-400 hover:text-white hover:border-white/30 transition-all group"
-                            >
-                                {prompt}
-                                <ArrowRight className="h-3 w-3 mt-1 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                            </button>
-                        ))}
-                    </CardContent>
-                    <CardFooter className="mt-auto border-t border-border/50 pt-4">
-                        <div className="p-3 rounded-xl bg-white/5 border border-border">
-                            <p className="text-[10px] text-gray-500 font-medium">
-                                AI Advisor uses real-time news sentiment and your portfolio data to provide tailored insights.
-                            </p>
-                        </div>
-                    </CardFooter>
-                </Card>
+        <div className="flex flex-col h-[calc(100vh-4rem)] bg-dark-bg font-sharp">
+            {/* Header */}
+            <div className="bg-dark-gray border-b border-dark-gray p-4 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 className="text-white font-bold">Stocko Chat</h2>
+                    <p className="text-xs text-gray-400">Your AI Stock Market Assistant</p>
+                </div>
+                <button
+                    onClick={() => { }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dark-gray hover:border-neon-green text-gray-300 hover:text-neon-green transition-all duration-300 text-sm font-medium"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    History
+                </button>
             </div>
 
-            {/* Main Chat Interface */}
-            <div className="flex-1 flex flex-col h-full">
-                <Card className="flex-1 flex flex-col bg-card border-border overflow-hidden">
-                    <CardHeader className="border-b border-border px-6 py-4 flex flex-row items-center justify-between bg-black/50 backdrop-blur-xl">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                                <Sparkles className="h-5 w-5 text-black" />
-                            </div>
-                            <div>
-                                <CardTitle className="text-white text-lg font-bold">FinCopilot Advisor</CardTitle>
-                                <div className="flex items-center text-[10px] font-bold text-white uppercase tracking-tighter">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-white mr-1.5 animate-pulse" />
-                                    AI Model Active
-                                </div>
-                            </div>
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center">
+                        <div className="mb-8">
+                            <svg className="w-16 h-16 text-neon-green/50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
                         </div>
-                        <Button variant="ghost" size="icon" className="text-gray-500 hover:text-white" onClick={() => setMessages(messages.slice(0, 1))}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </CardHeader>
-
-                    <CardContent className="flex-1 overflow-hidden p-0 relative">
-                        <ScrollArea className="h-full px-6 py-8 no-scrollbar" ref={scrollRef}>
-                            <div className="space-y-8 pb-4">
-                                {messages.map((msg) => (
-                                    <div
-                                        key={msg.id}
-                                        className={cn(
-                                            "flex items-start gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300",
-                                            msg.role === 'user' ? "flex-row-reverse" : "flex-row"
-                                        )}
-                                    >
-                                        <Avatar className={cn(
-                                            "h-9 w-9 border",
-                                            msg.role === 'user' ? "border-border" : "border-white/20 bg-white/5"
-                                        )}>
-                                            {msg.role === 'user' ? (
-                                                <><AvatarImage src="" /><AvatarFallback className="bg-secondary text-white font-bold">{user?.name?.[0] || 'U'}</AvatarFallback></>
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <Bot className="h-5 w-5 text-white" />
-                                                </div>
-                                            )}
-                                        </Avatar>
-                                        <div className={cn(
-                                            "flex flex-col max-w-[80%] space-y-1",
-                                            msg.role === 'user' ? "items-end" : "items-start"
-                                        )}>
-                                            <div className={cn(
-                                                "rounded-2xl p-4 text-sm leading-relaxed",
-                                                msg.role === 'user'
-                                                    ? "bg-white text-black font-medium"
-                                                    : "bg-secondary border border-border text-gray-200"
-                                            )}>
-                                                {msg.content}
-                                            </div>
-                                            <span className="text-[10px] text-gray-600 font-bold px-1 uppercase tracking-tighter">
-                                                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {isThinking && (
-                                    <div className="flex items-start gap-4">
-                                        <Avatar className="h-9 w-9 border border-white/20 bg-white/5">
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Bot className="h-5 w-5 text-white" />
-                                            </div>
-                                        </Avatar>
-                                        <div className="bg-secondary border border-border rounded-xl px-4 py-3 flex items-center space-x-2">
-                                            <Loader2 className="h-3 w-3 text-white animate-spin" />
-                                            <span className="text-xs text-gray-500 font-medium">FinCopilot is thinking...</span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-
-                    <CardFooter className="border-t border-border p-6 bg-card/50">
-                        <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-secondary focus-within:border-white/50 transition-all pr-12">
-                            <Input
-                                placeholder="Ask about your portfolio, market sentiment, or strategy..."
-                                className="border-none bg-transparent h-14 text-white placeholder:text-gray-600 focus-visible:ring-0"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        <p className="text-gray-400 text-sm">Start a conversation to get stock insights</p>
+                    </div>
+                ) : (
+                    messages.map((message, index) =>
+                        message.type === 'user' ? (
+                            <ChatMessage
+                                key={index}
+                                type="user"
+                                content={message.content as string}
+                                timestamp={message.timestamp}
                             />
-                            <Button
-                                size="icon"
-                                onClick={handleSend}
-                                disabled={!input.trim() || isThinking}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white text-black hover:bg-gray-200 rounded-xl h-10 w-10 shrink-0"
-                            >
-                                {isThinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                            </Button>
-                        </div>
-                    </CardFooter>
-                </Card>
+                        ) : (
+                            <div key={index}>
+                                <BotResponse
+                                    response={message.content as BotResponseData}
+                                    isLoading={message.isLoading || false}
+                                    onRetry={handleRetry}
+                                    error={null}
+                                />
+                            </div>
+                        )
+                    )
+                )}
+                {error && (
+                    <BotResponse
+                        response={null}
+                        isLoading={false}
+                        onRetry={handleRetry}
+                        error={error}
+                    />
+                )}
+                {isLoading && messages[messages.length - 1]?.type === 'user' && (
+                    <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded-full bg-neon-green animate-pulse"></div>
+                        <p className="text-gray-400 text-sm">Stocko is analyzing...</p>
+                    </div>
+                )}
+                <div ref={messagesEndRef} />
             </div>
+
+            {/* Input Bar */}
+            <ChatInputBar
+                onSendMessage={handleSendMessage}
+                onNewChat={() => setMessages([])}
+                isLoading={isLoading}
+            />
+
+            {/* Scroll to bottom button */}
+            {messages.length > 0 && (
+                <button
+                    onClick={scrollToBottom}
+                    className="absolute bottom-24 right-6 p-3 rounded-full bg-neon-green/20 border border-neon-green text-neon-green hover:bg-neon-green/30 transition-all z-10 shadow-lg"
+                    title="Scroll to bottom"
+                >
+                    <ArrowUp size={18} className="transform rotate-180" />
+                </button>
+            )}
         </div>
-    );
+    )
 }

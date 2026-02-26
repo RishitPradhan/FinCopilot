@@ -237,44 +237,44 @@ export default function CommunityPage() {
 
     return (
         <div className="flex-1 bg-black text-white p-2 md:p-3 overflow-y-auto no-scrollbar">
-            <div className="max-w-6xl mx-auto space-y-3">
+            <div className="max-w-6xl mx-auto space-y-6 pb-20">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 border-b border-neutral-900 pb-3">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8 pt-4">
                     <div>
                         <motion.h1
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="text-4xl font-bold tracking-tighter"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-5xl font-black tracking-tighter text-white uppercase italic"
                         >
                             Community
                         </motion.h1>
-                        <p className="text-neutral-500 mt-2 uppercase tracking-widest text-xs font-bold">Connect & Share Financial Insights</p>
+                        <p className="text-gray-500 mt-2 uppercase tracking-[0.3em] text-[10px] font-black">Financial Intelligence Network</p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                         <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
                             <Input
                                 placeholder="Search insights..."
-                                className="pl-10 bg-neutral-900/50 border-neutral-800 text-sm h-10 w-[240px] focus:ring-1 focus:ring-white transition-all rounded-full"
+                                className="pl-12 bg-white/[0.03] border-white/10 text-sm h-12 w-[300px] focus:ring-1 focus:ring-white transition-all rounded-2xl placeholder:text-gray-700"
                             />
                         </div>
-                        <Button className="bg-white text-black hover:bg-neutral-200 rounded-full h-10 px-6 font-bold text-xs uppercase tracking-tight">
-                            <Plus className="w-4 h-4 mr-2" /> New Post
+                        <Button className="bg-white text-black hover:bg-neutral-200 rounded-2xl h-12 px-8 font-black text-[10px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">
+                            <Plus className="w-4 h-4 mr-2" /> Share Insight
                         </Button>
                     </div>
                 </div>
 
                 {/* Filter Bar */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-neutral-900/50">
-                    <Filter className="w-3 h-3 text-neutral-700 mr-2 flex-shrink-0" />
+                <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar border-b border-white/5">
+                    <Filter className="w-3.5 h-3.5 text-gray-700 mr-3 flex-shrink-0" />
                     {categories.map(cat => (
                         <button
                             key={cat}
                             onClick={() => setSelectedFilter(cat)}
-                            className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all border ${selectedFilter === cat
-                                ? 'bg-white text-black border-white'
-                                : 'bg-neutral-950 text-neutral-500 border-neutral-900 hover:border-neutral-700'
+                            className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${selectedFilter === cat
+                                ? 'bg-white text-black border-white shadow-xl scale-105'
+                                : 'bg-white/[0.03] text-gray-500 border-white/5 hover:border-white/20 hover:text-white'
                                 }`}
                         >
                             {cat}
@@ -284,14 +284,14 @@ export default function CommunityPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                     {/* Left Sidebar: Filters/Tags */}
-                    <div className="hidden lg:block space-y-3 sticky top-3 self-start h-fit">
-                        <Card className="bg-neutral-950 border-neutral-900 overflow-hidden">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500 flex items-center gap-2">
-                                    <MessageSquare className="w-3 h-3" /> Navigation
+                    <div className="hidden lg:block space-y-6 sticky top-3 self-start h-fit">
+                        <Card className="premium-card">
+                            <CardHeader className="pb-2 bg-white/[0.02] border-b border-white/5">
+                                <CardTitle className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 flex items-center gap-2">
+                                    <MessageSquare className="w-3.5 h-3.5" /> Navigation
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-1">
+                            <CardContent className="space-y-1 p-3">
                                 {[
                                     { label: 'Feed', id: 'feed', icon: MessageSquare },
                                     { label: 'Messages', id: 'messages', icon: Send },
@@ -300,7 +300,7 @@ export default function CommunityPage() {
                                     <button
                                         key={item.id}
                                         onClick={() => setActiveView(item.id as any)}
-                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeView === item.id ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+                                        className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeView === item.id ? 'bg-white text-black shadow-2xl scale-[1.02]' : 'text-gray-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
                                         <item.icon className="w-4 h-4" /> {item.label}
@@ -310,65 +310,65 @@ export default function CommunityPage() {
                         </Card>
 
                         {/* Market Pulse Widget */}
-                        <Card className="bg-neutral-950 border-neutral-900 overflow-hidden group">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500 flex items-center gap-2">
-                                    <Activity className="w-3 h-3" /> Market Pulse
+                        <Card className="premium-card group overflow-hidden">
+                            <CardHeader className="pb-2 bg-white/[0.02] border-b border-white/5">
+                                <CardTitle className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 flex items-center gap-2">
+                                    <Activity className="w-3.5 h-3.5" /> Market Pulse
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-1">
+                            <CardContent className="space-y-6 p-6">
+                                <div className="space-y-3">
                                     <div className="flex justify-between items-end">
-                                        <span className="text-2xl font-black tracking-tighter text-white">
+                                        <span className="text-3xl font-black tracking-tighter text-white">
                                             {trendingData?.marketInsights?.sentiment || 50}%
                                         </span>
-                                        <span className="text-[10px] font-bold uppercase text-neutral-600 mb-1">Bullish</span>
+                                        <span className="text-[9px] font-black uppercase text-emerald-500 mb-1 tracking-widest">Bullish</span>
                                     </div>
-                                    <div className="h-1 w-full bg-neutral-900 rounded-full overflow-hidden">
+                                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${trendingData?.marketInsights?.sentiment || 50}%` }}
-                                            className="h-full bg-white transition-all duration-1000"
+                                            className="h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all duration-1000"
                                         />
                                     </div>
                                 </div>
-                                <p className="text-[11px] text-neutral-500 leading-tight">
-                                    Community sentiment is currently <span className="text-white font-bold">Strongly Bullish</span> based on recent trade discussions.
+                                <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                                    Community sentiment is currently <span className="text-emerald-400 font-bold uppercase tracking-widest">Strongly Bullish</span> based on recent discussions.
                                 </p>
                             </CardContent>
                         </Card>
 
                         {/* Top Contributors Sidebar Mini */}
-                        <Card className="bg-neutral-950 border-neutral-900">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500 flex items-center gap-2">
-                                    <Users className="w-3 h-3" /> Top Analysts
+                        <Card className="premium-card">
+                            <CardHeader className="pb-2 bg-white/[0.02] border-b border-white/5">
+                                <CardTitle className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 flex items-center gap-2">
+                                    <Users className="w-3.5 h-3.5" /> Top Analysts
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-3">
+                            <CardContent className="space-y-4 p-4">
                                 {(trendingData?.marketInsights?.topContributors || []).slice(0, 3).map((contributor) => (
-                                    <div key={contributor.email} className="flex items-center gap-3 group/item cursor-pointer">
-                                        <Avatar className="w-8 h-8 border border-neutral-900 group-hover/item:border-neutral-700 transition-colors">
-                                            <AvatarFallback className="bg-neutral-900 text-white font-bold text-[10px]">{contributor.name[0]}</AvatarFallback>
+                                    <div key={contributor.email} className="flex items-center gap-4 group/item cursor-pointer">
+                                        <Avatar className="w-10 h-10 border border-white/10 group-hover/item:border-white transition-all shadow-xl">
+                                            <AvatarFallback className="bg-white/5 text-white font-black text-xs">{contributor.name[0]}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-bold text-neutral-300 group-hover/item:text-white transition-colors truncate">{contributor.name}</p>
-                                            <p className="text-[10px] text-neutral-600 truncate">IQ: {contributor.iqScore}</p>
+                                            <p className="text-xs font-black text-gray-400 group-hover/item:text-white transition-colors truncate tracking-tight">{contributor.name}</p>
+                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mt-0.5">IQ: {contributor.iqScore}</p>
                                         </div>
                                     </div>
                                 ))}
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-neutral-950 border-neutral-900">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500">Trending Topics</CardTitle>
+                        <Card className="premium-card">
+                            <CardHeader className="pb-2 bg-white/[0.02] border-b border-white/5">
+                                <CardTitle className="text-[9px] uppercase tracking-[0.2em] font-black text-gray-500">Trending Topics</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex flex-wrap gap-1.5 pt-0">
+                            <CardContent className="flex flex-wrap gap-2 p-4">
                                 {(trendingData?.trendingTags || ['Stocks', 'Crypto', 'Market']).map(tag => {
                                     const tagName = typeof tag === 'string' ? tag : tag.name;
                                     return (
-                                        <Badge key={tagName} variant="secondary" className="bg-neutral-900/50 text-neutral-500 hover:text-white hover:bg-neutral-800 cursor-pointer border-none py-0.5 px-2 text-[10px]">
+                                        <Badge key={tagName} variant="secondary" className="bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 cursor-pointer border-white/5 py-1 px-3 text-[9px] font-black uppercase tracking-widest">
                                             #{tagName}
                                         </Badge>
                                     );
@@ -443,45 +443,45 @@ export default function CommunityPage() {
                                                 animate={{ opacity: 1 }}
                                                 key={post._id}
                                             >
-                                                <Card className="bg-neutral-950 border-neutral-900 hover:border-neutral-700 transition-colors group">
-                                                    <CardHeader className="flex flex-row items-center gap-3 pb-1 pt-3">
-                                                        <Avatar className="w-7 h-7 border border-neutral-800 group-hover:border-neutral-600 transition-colors">
-                                                            <AvatarFallback className="bg-neutral-900 text-white font-bold text-[10px]">{post.author?.name?.[0]}</AvatarFallback>
+                                                <Card className="premium-card hover:border-white/10 transition-all group overflow-hidden">
+                                                    <CardHeader className="flex flex-row items-center gap-4 pb-2 pt-6 px-6">
+                                                        <Avatar className="w-9 h-9 border border-white/10 group-hover:border-white/30 transition-colors shadow-lg">
+                                                            <AvatarFallback className="bg-white/5 text-white font-black text-xs">{post.author?.name?.[0]}</AvatarFallback>
                                                         </Avatar>
                                                         <Link href={`/profile/${post.author?._id}`} className="flex-1 group/author min-w-0">
                                                             <div className="flex items-center gap-2 truncate">
-                                                                <CardTitle className="text-[11px] font-bold group-hover/author:text-white transition-colors truncate">{post.author?.name}</CardTitle>
-                                                                <span className="text-neutral-700 text-[9px] whitespace-nowrap">• {new Date(post.createdAt).toLocaleDateString()}</span>
+                                                                <CardTitle className="text-xs font-black group-hover/author:text-primary transition-colors truncate tracking-tight">{post.author?.name}</CardTitle>
+                                                                <span className="text-gray-700 text-[9px] font-black uppercase tracking-widest whitespace-nowrap opacity-60">• {new Date(post.createdAt).toLocaleDateString()}</span>
                                                             </div>
-                                                            <p className="text-[9px] text-neutral-700 uppercase tracking-tighter font-bold truncate">{post.author?.email}</p>
+                                                            <p className="text-[9px] text-gray-600 uppercase tracking-widest font-black truncate">{post.author?.email}</p>
                                                         </Link>
-                                                        <Button variant="ghost" size="icon" className="text-neutral-800 hover:text-white h-7 w-7">
-                                                            <MoreHorizontal className="w-3 h-3" />
+                                                        <Button variant="ghost" size="icon" className="text-gray-700 hover:text-white h-8 w-8 hover:bg-white/5">
+                                                            <MoreHorizontal className="w-4 h-4" />
                                                         </Button>
                                                     </CardHeader>
-                                                    <CardContent className="space-y-1.5 pb-2">
-                                                        <h3 className="text-base font-bold tracking-tight">{post.title}</h3>
-                                                        <p className="text-neutral-500 text-[11px] leading-snug line-clamp-2 group-hover:line-clamp-none transition-all">{post.content}</p>
-                                                        <div className="flex flex-wrap gap-2 pt-1">
+                                                    <CardContent className="space-y-3 pb-4 px-6 pt-2">
+                                                        <h3 className="text-xl font-black tracking-tight text-white leading-tight">{post.title}</h3>
+                                                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all font-medium">{post.content}</p>
+                                                        <div className="flex flex-wrap gap-3 pt-2">
                                                             {post.tags.map(tag => (
-                                                                <span key={tag} className="text-[9px] text-neutral-700 font-bold italic">#{tag}</span>
+                                                                <span key={tag} className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] italic opacity-80 group-hover:opacity-100 group-hover:text-white transition-all">#{tag}</span>
                                                             ))}
                                                         </div>
                                                     </CardContent>
-                                                    <CardFooter className="flex items-center gap-4 pt-0 border-t border-neutral-900/30 mt-0">
+                                                    <CardFooter className="flex items-center gap-6 py-4 px-6 border-t border-white/5 bg-white/[0.01]">
                                                         <button
                                                             onClick={() => handleLike(post._id)}
-                                                            className={`flex items-center gap-1.5 py-1.5 transition-colors ${post.likes.includes(user?.id || '') ? 'text-white' : 'text-neutral-800 hover:text-white'}`}
+                                                            className={`flex items-center gap-2 py-1 transition-all ${post.likes.includes(user?.id || '') ? 'text-primary' : 'text-gray-600 hover:text-white'}`}
                                                         >
-                                                            <Heart className={`w-2.5 h-2.5 ${post.likes.includes(user?.id || '') ? 'fill-white' : ''}`} />
-                                                            <span className="text-[8px] font-bold">{post.likes.length}</span>
+                                                            <Heart className={`w-3.5 h-3.5 ${post.likes.includes(user?.id || '') ? 'fill-primary' : ''}`} />
+                                                            <span className="text-[10px] font-black tracking-widest">{post.likes.length}</span>
                                                         </button>
-                                                        <button className="flex items-center gap-1.5 py-1.5 text-neutral-800 hover:text-white transition-colors">
-                                                            <MessageCircle className="w-2.5 h-2.5" />
-                                                            <span className="text-[8px] font-bold">{post.comments.length}</span>
+                                                        <button className="flex items-center gap-2 py-1 text-gray-600 hover:text-white transition-all">
+                                                            <MessageCircle className="w-3.5 h-3.5" />
+                                                            <span className="text-[10px] font-black tracking-widest">{post.comments.length}</span>
                                                         </button>
-                                                        <button className="flex items-center gap-1.5 py-1.5 text-neutral-800 hover:text-white transition-colors">
-                                                            <Share2 className="w-2.5 h-2.5" />
+                                                        <button className="flex items-center gap-2 py-1 text-gray-600 hover:text-white transition-all">
+                                                            <Share2 className="w-3.5 h-3.5" />
                                                         </button>
                                                     </CardFooter>
                                                 </Card>
@@ -495,7 +495,7 @@ export default function CommunityPage() {
                                     initial={{ opacity: 0, scale: 0.98 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.98 }}
-                                    className="h-[calc(100vh-280px)] min-h-[600px] flex rounded-2xl overflow-hidden border border-neutral-900 bg-neutral-950/50 backdrop-blur-xl"
+                                    className="h-[calc(100vh-280px)] min-h-[600px] flex rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] backdrop-blur-2xl shadow-2xl"
                                 >
                                     {/* Conversations Sidebar */}
                                     <div className="w-full md:w-[350px] border-r border-neutral-900 flex flex-col bg-black/40">
@@ -560,21 +560,21 @@ export default function CommunityPage() {
                                         {activeChat ? (
                                             <>
                                                 {/* Chat Header */}
-                                                <div className="p-4 border-b border-neutral-900 flex items-center justify-between bg-black/40 backdrop-blur-md">
-                                                    <div className="flex items-center gap-3">
-                                                        <Avatar className="w-10 h-10 border border-neutral-800/50">
-                                                            <AvatarFallback className="bg-neutral-900 text-white font-bold">{activeChat.user.name[0]}</AvatarFallback>
+                                                <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.03] backdrop-blur-3xl">
+                                                    <div className="flex items-center gap-4">
+                                                        <Avatar className="w-12 h-12 border border-white/10 shadow-xl">
+                                                            <AvatarFallback className="bg-white/5 text-white font-black">{activeChat.user.name[0]}</AvatarFallback>
                                                         </Avatar>
                                                         <div>
-                                                            <h3 className="text-sm font-bold">{activeChat.user.name}</h3>
-                                                            <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">Online</p>
+                                                            <h3 className="text-sm font-black text-white tracking-tight">{activeChat.user.name}</h3>
+                                                            <p className="text-[9px] text-emerald-500 uppercase tracking-[0.2em] font-black mt-0.5">Active Now</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button variant="ghost" size="icon" className="rounded-full text-neutral-400">
+                                                    <div className="flex items-center gap-3">
+                                                        <Button variant="ghost" size="icon" className="rounded-xl text-gray-500 hover:text-white hover:bg-white/5">
                                                             <Search className="w-4 h-4" />
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" className="rounded-full text-neutral-400">
+                                                        <Button variant="ghost" size="icon" className="rounded-xl text-gray-500 hover:text-white hover:bg-white/5">
                                                             <MoreHorizontal className="w-4 h-4" />
                                                         </Button>
                                                     </div>
@@ -583,7 +583,7 @@ export default function CommunityPage() {
                                                 {/* Messages Area */}
                                                 <div
                                                     ref={scrollRef}
-                                                    className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-90"
+                                                    className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar"
                                                 >
                                                     {activeChat.messages.map((msg, i) => {
                                                         const isMe = msg.sender._id === user?.id;
@@ -594,16 +594,16 @@ export default function CommunityPage() {
                                                                 key={msg._id}
                                                                 className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                                                             >
-                                                                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 shadow-xl ${isMe
-                                                                    ? 'bg-white text-black rounded-tr-none'
-                                                                    : 'bg-neutral-900 text-neutral-200 rounded-tl-none border border-neutral-800'
+                                                                <div className={`max-w-[70%] rounded-2xl px-5 py-3 shadow-2xl ${isMe
+                                                                    ? 'bg-white text-black rounded-tr-none font-medium'
+                                                                    : 'bg-white/[0.05] text-gray-200 rounded-tl-none border border-white/5 backdrop-blur-md'
                                                                     }`}>
                                                                     <p className="text-sm leading-relaxed">{msg.content}</p>
-                                                                    <div className={`flex items-center justify-end gap-1 mt-1 ${isMe ? 'text-black/50' : 'text-neutral-500'}`}>
-                                                                        <span className="text-[9px] font-bold uppercase">
+                                                                    <div className={`flex items-center justify-end gap-2 mt-2 ${isMe ? 'text-black/40' : 'text-gray-600'}`}>
+                                                                        <span className="text-[9px] font-black uppercase tracking-widest">
                                                                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                                         </span>
-                                                                        {isMe && <CheckCheck className="w-3 h-3" />}
+                                                                        {isMe && <CheckCheck className="w-3.5 h-3.5" />}
                                                                     </div>
                                                                 </div>
                                                             </motion.div>
@@ -612,9 +612,9 @@ export default function CommunityPage() {
                                                 </div>
 
                                                 {/* Message Input */}
-                                                <div className="p-4 border-t border-neutral-900 bg-black/40 backdrop-blur-md">
-                                                    <form onSubmit={handleSendMessage} className="flex items-center gap-3">
-                                                        <Button type="button" variant="ghost" size="icon" className="rounded-full text-neutral-500 shrink-0">
+                                                <div className="p-6 border-t border-white/5 bg-white/[0.03] backdrop-blur-3xl">
+                                                    <form onSubmit={handleSendMessage} className="flex items-center gap-4">
+                                                        <Button type="button" variant="ghost" size="icon" className="rounded-xl text-gray-500 shrink-0 hover:bg-white/5 hover:text-white">
                                                             <Paperclip className="w-5 h-5" />
                                                         </Button>
                                                         <div className="flex-1 relative">
@@ -622,11 +622,11 @@ export default function CommunityPage() {
                                                                 value={newMessage.content}
                                                                 onChange={(e) => setNewMessage({ ...newMessage, content: e.target.value })}
                                                                 placeholder="Type a message..."
-                                                                className="bg-neutral-900/50 border-neutral-800 text-sm h-12 rounded-2xl pr-12 focus:ring-1 focus:ring-white transition-all shadow-inner"
+                                                                className="bg-white/[0.05] border-white/10 text-sm h-14 rounded-2xl pr-16 focus:ring-1 focus:ring-white/20 transition-all shadow-xl placeholder:text-gray-700 font-medium"
                                                             />
-                                                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                                                <button type="submit" disabled={!newMessage.content} className="p-2 bg-white text-black rounded-xl hover:bg-neutral-200 transition-all disabled:opacity-50 disabled:scale-95 active:scale-90">
-                                                                    <Send className="w-4 h-4" />
+                                                            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                                                                <button type="submit" disabled={!newMessage.content} className="p-3 bg-white text-black rounded-xl hover:bg-gray-200 transition-all disabled:opacity-30 active:scale-90 shadow-lg">
+                                                                    <Send className="w-4 h-4 fill-black" />
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -653,64 +653,64 @@ export default function CommunityPage() {
                                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                                 >
                                     {/* Market Sentiment */}
-                                    <Card className="bg-neutral-950 border-neutral-900 overflow-hidden relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <CardHeader>
-                                            <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500">Market Sentiment</CardTitle>
+                                    <Card className="premium-card group relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
+                                        <CardHeader className="bg-white/[0.02] border-b border-white/5">
+                                            <CardTitle className="text-[9px] uppercase tracking-[0.3em] font-black text-gray-500">Global Sentiment</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="flex flex-col items-center justify-center py-8">
-                                            <div className="relative w-48 h-48 flex items-center justify-center">
-                                                <svg className="w-full h-full transform -rotate-90">
+                                        <CardContent className="flex flex-col items-center justify-center py-12">
+                                            <div className="relative w-56 h-56 flex items-center justify-center">
+                                                <svg className="w-full h-full transform -rotate-90 drop-shadow-2xl">
                                                     <circle
-                                                        cx="96"
-                                                        cy="96"
-                                                        r="80"
+                                                        cx="112"
+                                                        cy="112"
+                                                        r="90"
                                                         stroke="currentColor"
-                                                        strokeWidth="12"
+                                                        strokeWidth="14"
                                                         fill="transparent"
-                                                        className="text-neutral-900"
+                                                        className="text-white/5"
                                                     />
                                                     <circle
-                                                        cx="96"
-                                                        cy="96"
-                                                        r="80"
+                                                        cx="112"
+                                                        cy="112"
+                                                        r="90"
                                                         stroke="currentColor"
-                                                        strokeWidth="12"
+                                                        strokeWidth="14"
                                                         fill="transparent"
-                                                        strokeDasharray={502.4}
-                                                        strokeDashoffset={502.4 - (502.4 * (trendingData?.marketInsights?.sentiment || 75)) / 100}
-                                                        className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                                                        strokeDasharray={565.2}
+                                                        strokeDashoffset={565.2 - (565.2 * (trendingData?.marketInsights?.sentiment || 75)) / 100}
+                                                        className="text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]"
                                                     />
                                                 </svg>
                                                 <div className="absolute flex flex-col items-center">
-                                                    <span className="text-4xl font-bold tracking-tighter">{trendingData?.marketInsights?.sentiment || 75}%</span>
-                                                    <span className="text-[10px] uppercase font-bold text-neutral-500">Bullish</span>
+                                                    <span className="text-5xl font-black tracking-tighter text-white italic">{trendingData?.marketInsights?.sentiment || 75}%</span>
+                                                    <span className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-500 mt-1">Bullish</span>
                                                 </div>
                                             </div>
-                                            <p className="mt-6 text-sm text-center text-neutral-400 max-w-[200px]">
-                                                The community is currently feeling highly optimistic about the upcoming quarter.
+                                            <p className="mt-10 text-[11px] text-center text-gray-600 max-w-[240px] font-medium leading-relaxed uppercase tracking-widest">
+                                                The community is currently feeling <span className="text-white">highly optimistic</span> about the current cycle.
                                             </p>
                                         </CardContent>
                                     </Card>
 
                                     {/* Hot Stocks */}
-                                    <Card className="bg-neutral-950 border-neutral-900">
-                                        <CardHeader>
-                                            <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500">Most Discussed Stocks</CardTitle>
+                                    <Card className="premium-card">
+                                        <CardHeader className="bg-white/[0.02] border-b border-white/5">
+                                            <CardTitle className="text-[9px] uppercase tracking-[0.3em] font-black text-gray-500">Hot Discussions</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="space-y-4">
+                                        <CardContent className="space-y-4 p-6">
                                             {(trendingData?.marketInsights?.hotStocks || []).map((stock: TrendingStock) => (
-                                                <div key={stock.symbol} className="flex items-center justify-between p-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 hover:border-neutral-700 transition-all cursor-pointer group">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold text-xs">
+                                                <div key={stock.symbol} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all cursor-pointer group shadow-lg">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs shadow-2xl">
                                                             {stock.symbol[0]}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-bold tracking-tight">{stock.symbol}</p>
-                                                            <p className="text-[10px] text-neutral-500 font-bold uppercase">{stock.mentions} Mentions</p>
+                                                            <p className="text-sm font-black tracking-tight text-white">{stock.symbol}</p>
+                                                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-widest mt-1">{stock.mentions} Mentions</p>
                                                         </div>
                                                     </div>
-                                                    <div className={`text-xs font-bold ${stock.change.startsWith('+') ? 'text-white' : 'text-neutral-500'}`}>
+                                                    <div className={`text-[10px] font-black tracking-widest italic ${stock.change.startsWith('+') ? 'text-emerald-500' : 'text-rose-500'}`}>
                                                         {stock.change}
                                                     </div>
                                                 </div>
@@ -719,27 +719,27 @@ export default function CommunityPage() {
                                     </Card>
 
                                     {/* Top Contributors */}
-                                    <Card className="md:col-span-2 bg-neutral-950 border-neutral-900">
-                                        <CardHeader>
-                                            <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500">Market Mavericks (Top Contributors)</CardTitle>
+                                    <Card className="md:col-span-2 premium-card overflow-hidden">
+                                        <CardHeader className="bg-white/[0.02] border-b border-white/5">
+                                            <CardTitle className="text-[9px] uppercase tracking-[0.3em] font-black text-gray-500">Market Mavericks (Top Contributors)</CardTitle>
                                         </CardHeader>
-                                        <CardContent>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <CardContent className="p-8">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 {(trendingData?.marketInsights?.topContributors || []).map((contributor: Contributor) => (
-                                                    <div key={contributor._id} className="p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-neutral-800 flex flex-col items-center text-center">
-                                                        <Avatar className="w-16 h-16 border-2 border-white mb-4">
-                                                            <AvatarFallback className="bg-neutral-800 text-white font-bold text-xl">{contributor.name[0]}</AvatarFallback>
+                                                    <div key={contributor._id} className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 flex flex-col items-center text-center shadow-2xl hover:border-white/10 transition-all group">
+                                                        <Avatar className="w-20 h-20 border-2 border-white/10 group-hover:border-white transition-all mb-6 shadow-2xl">
+                                                            <AvatarFallback className="bg-white/5 text-white font-black text-2xl uppercase italic">{contributor.name[0]}</AvatarFallback>
                                                         </Avatar>
-                                                        <h4 className="font-bold text-sm mb-1">{contributor.name}</h4>
-                                                        <p className="text-[10px] text-neutral-600 uppercase font-extrabold tracking-tighter mb-4">{contributor.email}</p>
-                                                        <div className="w-full flex justify-around border-t border-neutral-800 pt-4">
+                                                        <h4 className="font-black text-sm mb-1 text-white tracking-tight">{contributor.name}</h4>
+                                                        <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-6 opacity-60 italic">{contributor.email}</p>
+                                                        <div className="w-full flex justify-around border-t border-white/5 pt-6">
                                                             <div>
-                                                                <p className="text-xs font-bold">{contributor.iqScore}</p>
-                                                                <p className="text-[9px] text-neutral-500 uppercase font-bold">IQ Score</p>
+                                                                <p className="text-sm font-black text-white">{contributor.iqScore}</p>
+                                                                <p className="text-[8px] text-gray-600 uppercase font-black tracking-[0.2em] mt-1">IQ Score</p>
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs font-bold">{Math.floor(Math.random() * 50) + 10}k</p>
-                                                                <p className="text-[9px] text-neutral-500 uppercase font-bold">Reach</p>
+                                                                <p className="text-sm font-black text-white">{Math.floor(Math.random() * 50) + 10}k</p>
+                                                                <p className="text-[8px] text-gray-600 uppercase font-black tracking-[0.2em] mt-1">Reach</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -749,13 +749,13 @@ export default function CommunityPage() {
                                     </Card>
 
                                     {/* Trending Tags (Horizontal) */}
-                                    <Card className="md:col-span-2 bg-black border-neutral-800">
-                                        <CardContent className="p-6">
-                                            <div className="flex flex-wrap items-center justify-center gap-4">
-                                                <span className="text-[10px] uppercase font-bold text-neutral-600 mr-2">Top Tags:</span>
+                                    <Card className="md:col-span-2 bg-white/[0.01] border-white/5 rounded-[40px]">
+                                        <CardContent className="p-10">
+                                            <div className="flex flex-wrap items-center justify-center gap-6">
+                                                <span className="text-[9px] uppercase font-black text-gray-700 tracking-[0.4em] mr-4">Network Nodes:</span>
                                                 {(trendingData?.trendingTags || []).map((tag: TrendingTag) => (
-                                                    <Badge key={tag.name} variant="outline" className="px-4 py-2 border-neutral-800 text-neutral-400 hover:text-white hover:border-white transition-all cursor-pointer">
-                                                        #{tag.name} <span className="ml-2 opacity-40">({tag.count})</span>
+                                                    <Badge key={tag.name} variant="outline" className="px-8 py-3 border-white/5 text-gray-500 hover:text-white hover:border-white/20 transition-all cursor-pointer rounded-2xl text-[10px] uppercase font-black tracking-widest bg-white/[0.02] shadow-xl">
+                                                        #{tag.name} <span className="ml-3 opacity-20 font-medium">({tag.count})</span>
                                                     </Badge>
                                                 ))}
                                             </div>

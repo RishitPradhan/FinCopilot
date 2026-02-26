@@ -22,7 +22,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import Spline from '@splinetool/react-spline/next';
+import dynamic from 'next/dynamic';
+
+const SplineHome = dynamic(() => import('@/components/landing/SplineHome'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-black/20 animate-pulse" />
+});
 
 const serifFont = "font-serif";
 const monoFont = "font-mono";
@@ -102,7 +107,7 @@ export default function LandingPage() {
         {/* Spline 3D Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/40 z-10 pointer-events-none" />
-          <Spline
+          <SplineHome
             scene="https://prod.spline.design/u1z08GYMTIh6kUVN/scene.splinecode"
           />
         </div>
@@ -179,24 +184,126 @@ export default function LandingPage() {
           ))}
         </div>
 
-        <Link href="/auth">
-          <Button size="lg" variant="ghost" className="text-white hover:text-white/80 p-0 font-black tracking-[0.4em] uppercase text-[10px] flex items-center gap-3 group">
-            Enter the ecosystem <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-          </Button>
-        </Link>
+        <motion.div
+          whileHover="hover"
+          initial="initial"
+        >
+          <Link href="/auth">
+            <Button size="lg" variant="ghost" className="text-white hover:bg-transparent p-0 font-black tracking-[0.4em] uppercase text-[10px] flex items-center gap-4 group relative">
+              <motion.span
+                variants={{
+                  initial: { letterSpacing: "0.4em" },
+                  hover: { letterSpacing: "0.6em" }
+                }}
+                transition={{ duration: 0.5, ease: "circOut" }}
+              >
+                Enter the ecosystem
+              </motion.span>
+              <motion.div
+                variants={{
+                  initial: { x: 0 },
+                  hover: { x: 10 }
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-white transition-colors" />
+              </motion.div>
+              <motion.div
+                className="absolute -bottom-4 left-0 right-0 h-[1px] bg-white/20 origin-left"
+                variants={{
+                  initial: { scaleX: 0 },
+                  hover: { scaleX: 1, backgroundColor: "rgba(255,255,255,0.8)" }
+                }}
+                transition={{ duration: 0.5, ease: "circOut" }}
+              />
+            </Button>
+          </Link>
+        </motion.div>
       </section>
 
       {/* Final CTA */}
       <section className="py-40 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900/50" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 space-y-12">
-          <h2 className={cn("text-6xl md:text-8xl font-black tracking-tighter text-white", serifFont)}>Ready to <br /> Evolve?</h2>
-          <p className="text-xl text-white/50 font-medium">Join thousands of investors who are redefining their financial future with AI-driven intelligence.</p>
-          <Link href="/auth">
-            <Button size="lg" className="bg-white text-black hover:bg-neutral-200 rounded-full font-black uppercase tracking-widest px-12 py-8 text-lg group active:scale-95 transition-all">
-              Get Started Free
-              <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-            </Button>
+          <motion.h2
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className={cn("text-6xl md:text-8xl font-black tracking-tighter text-white", serifFont)}
+          >
+            Ready to <br /> Evolve?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-xl text-white/50 font-medium"
+          >
+            Join thousands of investors who are redefining their financial future with AI-driven intelligence.
+          </motion.p>
+          <Link href="/auth" className="inline-block">
+            <motion.div
+              whileHover="hover"
+              initial="initial"
+              whileTap="tap"
+              className="relative"
+            >
+              <motion.div
+                variants={{
+                  hover: { scale: 1.05, filter: "brightness(1.1)" },
+                  tap: { scale: 0.98 }
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              >
+                <Button size="lg" className="bg-white text-black hover:bg-white rounded-full font-black uppercase tracking-widest px-12 py-10 text-xl shadow-[0_0_30px_rgba(255,255,255,0.1)] group overflow-hidden relative">
+                  <span className="relative z-10 flex items-center">
+                    Get Started Free
+                    <motion.div
+                      variants={{
+                        hover: { x: 8 }
+                      }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <ArrowRight className="ml-4 w-6 h-6" />
+                    </motion.div>
+                  </span>
+
+                  {/* Premium Shimmer Effect */}
+                  <motion.div
+                    variants={{
+                      hover: { x: "150%" }
+                    }}
+                    initial={{ x: "-150%" }}
+                    transition={{ duration: 1, ease: "easeInOut" }}
+                    className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-black/10 to-transparent skew-x-[35deg]"
+                  />
+
+                  {/* Subtle Glow Pulse */}
+                  <motion.div
+                    animate={{
+                      opacity: [0.1, 0.3, 0.1],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute inset-0 bg-white/5 rounded-full blur-2xl"
+                  />
+                </Button>
+              </motion.div>
+
+              {/* External Bloom */}
+              <motion.div
+                variants={{
+                  hover: { opacity: 0.4, scale: 1.15 }
+                }}
+                initial={{ opacity: 0, scale: 1 }}
+                className="absolute inset-0 bg-white/20 blur-3xl -z-10 rounded-full"
+              />
+            </motion.div>
           </Link>
         </div>
       </section>

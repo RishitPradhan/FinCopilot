@@ -77,78 +77,81 @@ export default function PortfolioPage() {
     const pnlPercent = (totalPnL / totalInvested) * 100;
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Portfolio Analyzer</h1>
-                    <p className="text-gray-400">Deep dive into your assets and risk profile.</p>
+                    <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Portfolio Catalyst</h1>
+                    <p className="text-gray-400 font-medium">Deep dive into your assets and risk profile.</p>
                 </div>
-                <Button className="bg-white text-black hover:bg-gray-200 font-bold">
+                <Button className="bg-white text-black hover:bg-neutral-200 font-black px-6 py-2 rounded-xl transition-all active:scale-95 shadow-lg">
                     <Plus className="h-4 w-4 mr-2" /> Add New Holding
                 </Button>
             </div>
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-card border-border shadow-xl">
+                <Card className="premium-card">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Total Invested</CardDescription>
+                        <CardDescription className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Total Invested</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white font-mono">${totalInvested.toLocaleString()}</div>
+                        <div className="text-3xl font-black text-white font-mono tracking-tighter">${totalInvested.toLocaleString()}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-card border-border shadow-xl">
+                <Card className="premium-card">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Current Value</CardDescription>
+                        <CardDescription className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Current Value</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-white font-mono">${currentValue.toLocaleString()}</div>
+                        <div className="text-3xl font-black text-white font-mono tracking-tighter">${currentValue.toLocaleString()}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-card border-border shadow-xl">
+                <Card className="premium-card">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-xs font-bold uppercase tracking-wider text-gray-500">Overall P&L</CardDescription>
+                        <CardDescription className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Overall P&L</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className={cn("text-2xl font-bold font-mono text-white")}>
+                        <div className={cn("text-3xl font-black font-mono tracking-tighter", totalPnL >= 0 ? "text-emerald-400" : "text-rose-400")}>
                             {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
                         </div>
-                        <div className={cn("flex items-center text-xs mt-1 font-bold text-white")}>
-                            {totalPnL >= 0 ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
-                            {pnlPercent.toFixed(2)}%
+                        <div className="flex items-center mt-2">
+                            <div className={cn(totalPnL >= 0 ? "trend-up" : "trend-down")}>
+                                {totalPnL >= 0 ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
+                                {pnlPercent.toFixed(2)}%
+                            </div>
+                            <span className="text-[10px] text-gray-600 ml-3 uppercase font-bold tracking-wider">Total Return</span>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-card border-border shadow-xl">
+                <Card className="premium-card">
                     <CardHeader className="pb-2">
-                        <CardDescription className="text-xs font-bold uppercase tracking-widest text-gray-500">Risk Score</CardDescription>
+                        <CardDescription className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Risk Score</CardDescription>
                     </CardHeader>
                     <CardContent className="flex items-center space-x-3">
-                        <div className="text-2xl font-bold text-white font-mono">68<span className="text-sm text-gray-500 ml-1">/100</span></div>
-                        <Badge className="bg-white/10 text-white border-none font-bold italic">Moderate</Badge>
+                        <div className="text-3xl font-black text-white font-mono tracking-tighter">68<span className="text-sm text-gray-600 ml-1">/100</span></div>
+                        <Badge className="bg-white/5 text-white border-white/10 font-bold px-3 py-1 rounded-full uppercase tracking-widest text-[10px]">Moderate</Badge>
                     </CardContent>
                 </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Holdings Table */}
-                <Card className="lg:col-span-2 bg-card border-border shadow-xl">
-                    <CardHeader className="border-b border-border/50">
-                        <CardTitle className="text-lg text-white font-bold flex items-center">
-                            <Activity className="h-4 w-4 mr-2 text-white" />
+                <Card className="lg:col-span-2 premium-card">
+                    <CardHeader className="border-b border-white/5 bg-white/[0.02]">
+                        <CardTitle className="text-xl font-black text-white flex items-center tracking-tight">
+                            <Activity className="h-5 w-5 mr-3 text-primary" />
                             Your Holdings
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                         <Table>
-                            <TableHeader className="border-border hover:bg-transparent">
-                                <TableRow className="border-border hover:bg-transparent">
-                                    <TableHead className="text-gray-500 font-bold">Stock</TableHead>
-                                    <TableHead className="text-gray-500 font-bold">Qty</TableHead>
-                                    <TableHead className="text-gray-500 font-bold">Buy Price</TableHead>
-                                    <TableHead className="text-gray-500 font-bold">Current</TableHead>
-                                    <TableHead className="text-gray-500 font-bold text-right">P&L</TableHead>
+                            <TableHeader className="border-white/5 hover:bg-transparent bg-white/[0.01]">
+                                <TableRow className="border-white/5 hover:bg-transparent">
+                                    <TableHead className="text-gray-500 font-black uppercase tracking-widest text-[10px] py-4">Stock</TableHead>
+                                    <TableHead className="text-gray-500 font-black uppercase tracking-widest text-[10px] py-4">Qty</TableHead>
+                                    <TableHead className="text-gray-500 font-black uppercase tracking-widest text-[10px] py-4">Buy Price</TableHead>
+                                    <TableHead className="text-gray-500 font-black uppercase tracking-widest text-[10px] py-4">Current</TableHead>
+                                    <TableHead className="text-gray-500 font-black uppercase tracking-widest text-[10px] py-4 text-right">P&L</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -156,21 +159,21 @@ export default function PortfolioPage() {
                                     const pnl = (h.currentPrice - h.buyPrice) * h.qty;
                                     const pnlPct = ((h.currentPrice - h.buyPrice) / h.buyPrice) * 100;
                                     return (
-                                        <TableRow key={h.id} className="border-border hover:bg-secondary/30">
+                                        <TableRow key={h.id} className="border-white/5 hover:bg-white/[0.03] transition-colors group">
                                             <TableCell>
                                                 <div className="flex flex-col">
-                                                    <span className="text-white font-bold">{h.ticker}</span>
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">{h.sector}</span>
+                                                    <span className="text-white font-black tracking-tight group-hover:text-primary transition-colors">{h.ticker}</span>
+                                                    <span className="text-[9px] text-gray-600 font-black uppercase tracking-widest">{h.sector}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-gray-300 font-mono">{h.qty}</TableCell>
-                                            <TableCell className="text-gray-400 font-mono">${h.buyPrice}</TableCell>
-                                            <TableCell className="text-white font-mono font-semibold">${h.currentPrice}</TableCell>
+                                            <TableCell className="text-gray-300 font-mono font-medium">{h.qty}</TableCell>
+                                            <TableCell className="text-gray-500 font-mono">${h.buyPrice}</TableCell>
+                                            <TableCell className="text-white font-mono font-black">${h.currentPrice}</TableCell>
                                             <TableCell className="text-right">
-                                                <div className={cn("text-sm font-bold text-white")}>
+                                                <div className={cn("text-sm font-black font-mono", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
                                                     {pnl >= 0 ? '+' : ''}${pnl.toLocaleString()}
                                                 </div>
-                                                <div className={cn("text-[10px] font-bold text-gray-500")}>
+                                                <div className={cn("text-[10px] font-bold mt-1", pnl >= 0 ? "text-emerald-500/60" : "text-rose-500/60")}>
                                                     {pnlPct.toFixed(1)}%
                                                 </div>
                                             </TableCell>
@@ -184,14 +187,14 @@ export default function PortfolioPage() {
 
                 {/* Analytics Section */}
                 <div className="space-y-6">
-                    <Card className="bg-card border-border shadow-xl">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <PieChartIcon className="h-4 w-4 mr-2 text-white" />
+                    <Card className="premium-card">
+                        <CardHeader className="pb-2 border-b border-white/5 bg-white/[0.02]">
+                            <CardTitle className="text-lg font-black text-white flex items-center tracking-tight">
+                                <PieChartIcon className="h-5 w-5 mr-3 text-primary" />
                                 Sector Allocation
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="h-[250px]">
+                        <CardContent className="h-[250px] p-6">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
@@ -208,34 +211,40 @@ export default function PortfolioPage() {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
+                                        contentStyle={{
+                                            backgroundColor: '#0a0a0a',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '12px',
+                                            color: '#fff',
+                                            backdropFilter: 'blur(10px)'
+                                        }}
+                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
                                     />
                                     <Legend
                                         verticalAlign="bottom"
                                         align="center"
                                         iconType="circle"
-                                        formatter={(value) => <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{value}</span>}
+                                        formatter={(value) => <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{value}</span>}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-card border-border overflow-hidden shadow-xl">
-                        {/* Risk Meter - Custom SVG Gauge */}
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-lg text-white font-bold flex items-center">
-                                <ShieldAlert className="h-4 w-4 mr-2 text-white" />
+                    <Card className="premium-card bg-gradient-to-b from-card/50 to-rose-500/[0.02]">
+                        <CardHeader className="pb-2 border-b border-white/5 bg-white/[0.02]">
+                            <CardTitle className="text-lg font-black text-white flex items-center tracking-tight">
+                                <ShieldAlert className="h-5 w-5 mr-3 text-rose-400" />
                                 Risk Exposure
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="flex flex-col items-center">
-                            <div className="relative w-48 h-24 mb-4">
+                        <CardContent className="flex flex-col items-center p-6">
+                            <div className="relative w-48 h-24 mb-6">
                                 <svg className="w-full h-full" viewBox="0 0 100 50">
                                     <path
                                         d="M 10 45 A 40 40 0 0 1 90 45"
                                         fill="none"
-                                        stroke="#222"
+                                        stroke="rgba(255,255,255,0.05)"
                                         strokeWidth="8"
                                         strokeLinecap="round"
                                     />
@@ -247,15 +256,16 @@ export default function PortfolioPage() {
                                         strokeLinecap="round"
                                         strokeDasharray="125"
                                         strokeDashoffset="20"
+                                        className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-end pb-2">
-                                    <span className="text-2xl font-bold text-white font-mono">68%</span>
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Moderate-High</span>
+                                    <span className="text-3xl font-black text-white font-mono tracking-tighter">68%</span>
+                                    <span className="text-[9px] font-black text-rose-400 uppercase tracking-widest">Moderate-High</span>
                                 </div>
                             </div>
-                            <p className="text-[11px] text-center text-gray-400 px-4">
-                                Your portfolio leans heavily towards Tech. High volatility expected during earnings season.
+                            <p className="text-[11px] text-center text-gray-500 px-2 font-medium leading-relaxed">
+                                Your portfolio leans heavily towards <span className="text-white font-bold">Tech</span>. High volatility expected during earnings season.
                             </p>
                         </CardContent>
                     </Card>
@@ -263,24 +273,49 @@ export default function PortfolioPage() {
             </div>
 
             {/* Portfolio Growth Chart */}
-            <Card className="bg-card border-border shadow-xl">
-                <CardHeader>
-                    <CardTitle className="text-xl text-white font-bold flex items-center">
-                        <BarChart3 className="h-4 w-4 mr-2 text-white" />
-                        Growth Performance
-                    </CardTitle>
-                    <CardDescription className="text-gray-400 uppercase text-[10px] tracking-widest font-bold">Projected vs Actual Portfolio Value</CardDescription>
+            <Card className="premium-card">
+                <CardHeader className="border-b border-white/5 bg-white/[0.02]">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle className="text-xl font-black text-white flex items-center tracking-tight">
+                                <BarChart3 className="h-5 w-5 mr-3 text-primary" />
+                                Growth Performance
+                            </CardTitle>
+                            <CardDescription className="text-gray-500 uppercase text-[9px] tracking-[0.2em] font-black mt-1">Projected vs Actual Portfolio Value</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent className="h-[300px] pt-4">
+                <CardContent className="h-[350px] p-6 pt-10">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={performanceData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                            <XAxis dataKey="month" stroke="#4b5563" fontSize={10} axisLine={false} tickLine={false} />
-                            <YAxis stroke="#4b5563" fontSize={10} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
+                            <defs>
+                                <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stopColor="#fff" stopOpacity={0.2} />
+                                    <stop offset="50%" stopColor="#fff" stopOpacity={1} />
+                                    <stop offset="100%" stopColor="#fff" stopOpacity={0.2} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                            <XAxis dataKey="month" stroke="#444" fontSize={10} axisLine={false} tickLine={false} />
+                            <YAxis stroke="#444" fontSize={10} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
+                                contentStyle={{
+                                    backgroundColor: '#0a0a0a',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px',
+                                    color: '#fff',
+                                    backdropFilter: 'blur(10px)'
+                                }}
+                                itemStyle={{ color: '#fff', fontWeight: 'bold' }}
                             />
-                            <Line type="monotone" dataKey="value" stroke="#fff" strokeWidth={3} dot={{ fill: '#fff', r: 4 }} activeDot={{ r: 6 }} />
+                            <Line
+                                type="monotone"
+                                dataKey="value"
+                                stroke="url(#lineGradient)"
+                                strokeWidth={4}
+                                dot={{ fill: '#fff', r: 4, strokeWidth: 2, stroke: '#000' }}
+                                activeDot={{ r: 8, fill: '#fff' }}
+                            />
                         </LineChart>
                     </ResponsiveContainer>
                 </CardContent>
