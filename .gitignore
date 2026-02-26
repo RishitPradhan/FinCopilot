@@ -1,0 +1,41 @@
+# General
+.DS_Store
+*.log
+.env
+.env.*
+
+# Node / Frontend / Backend
+node_modules/
+dist/
+.next/
+out/
+build/
+npm-debug.log*
+
+# Python / AI Server
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.venv
+.tox
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Artifacts
+brain/
+ 
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
