@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const advisorController = require('../controllers/advisor.controller');
+const authMiddleware = require('../middleware/auth.middleware');
 
-router.post('/chat', (req, res) => {
-    res.json({ content: 'I am your FinCopilot AI. How can I help you today?' });
-});
+router.post('/chat', authMiddleware, advisorController.chat);
+router.get('/history', authMiddleware, advisorController.getHistory);
 
 module.exports = router;

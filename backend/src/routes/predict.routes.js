@@ -1,16 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const predictController = require('../controllers/predict.controller');
+const authMiddleware = require('../middleware/auth.middleware');
 
-router.get('/history', (req, res) => {
-    res.json([]);
-});
-
-router.post('/submit', (req, res) => {
-    res.json({ id: 'res-1', status: 'pending' });
-});
-
-router.get('/result/:id', (req, res) => {
-    res.json({ id: req.params.id, result: 'UP', accuracy: 85 });
-});
+router.post('/submit', authMiddleware, predictController.submit);
+router.get('/history', authMiddleware, predictController.getHistory);
+router.post('/resolve/:id', authMiddleware, predictController.resolve);
 
 module.exports = router;

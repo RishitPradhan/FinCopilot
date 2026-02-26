@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const newsController = require('../controllers/news.controller');
+const authMiddleware = require('../middleware/auth.middleware');
 
-router.get('/', (req, res) => {
-    const stock = req.query.stock || 'General';
-    res.json([
-        { id: 1, headline: `Breaking News for ${stock}`, sentiment: 'Positive' }
-    ]);
-});
+router.get('/', authMiddleware, newsController.getNews);
 
 module.exports = router;

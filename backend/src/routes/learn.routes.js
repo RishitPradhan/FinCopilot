@@ -1,22 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const learnController = require('../controllers/learn.controller');
+const authMiddleware = require('../middleware/auth.middleware');
 
-// Mock data
-const modules = [
-    { id: '1', title: 'Basics of Stocks', progress: 0, status: 'unlocked' },
-    { id: '2', title: 'Risk vs Return', progress: 0, status: 'locked' },
-];
-
-router.get('/modules', (req, res) => {
-    res.json(modules);
-});
-
-router.post('/progress', (req, res) => {
-    res.json({ message: 'Progress updated' });
-});
-
-router.post('/quiz', (req, res) => {
-    res.json({ message: 'Quiz submitted', score: 100 });
-});
+router.get('/modules', authMiddleware, learnController.getModules);
+router.get('/progress', authMiddleware, learnController.getProgress);
+router.post('/progress', authMiddleware, learnController.markComplete);
+router.post('/quiz', authMiddleware, learnController.submitQuiz);
 
 module.exports = router;

@@ -1,50 +1,35 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.routers import predict, sentiment, explain, advisor
+from app.utils import iq_calculator
 import uvicorn
-import random
+import os
+from dotenv import load_dotenv
 
-app = FastAPI(title="FinCopilot AI Server")
+load_dotenv()
 
-class PredictionRequest(BaseModel):
-    stock: str
-    confidence: float
+app = FastAPI(title="FinCopilot AI Microservice")
 
-class ChatRequest(BaseModel):
-    message: str
-    user_context: dict
+# Static check for CORS origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include Routers
+app.include_router(predict.router, prefix="/ai", tags=["Prediction"])
+app.include_router(sentiment.router, prefix="/ai", tags=["Sentiment"])
+app.include_router(explain.router, prefix="/ai", tags=["Explanation"])
+app.include_router(advisor.router, prefix="/ai", tags=["Advisor"])
+app.include_router(iq_calculator.router, prefix="/ai", tags=["Utility"])
 
 @app.get("/")
 async def root():
-    return {"message": "FinCopilot AI Server is online"}
-
-@app.post("/predict")
-async def predict_stock(request: PredictionRequest):
-    # Mock AI prediction logic
-    trend = random.choice(["UP", "DOWN"])
-    reasoning = f"Based on technical momentum and current volume trends, {request.stock} shows a strong {trend} signal."
-    return {
-        "prediction": trend,
-        "confidence": 82.5,
-        "reasoning": reasoning
-    }
-
-@app.get("/sentiment")
-async def get_sentiment(stock: str):
-    # Mock sentiment analysis
-    score = random.randint(30, 90)
-    sentiment = "Positive" if score > 60 else "Negative" if score < 40 else "Neutral"
-    return {
-        "stock": stock,
-        "sentiment": sentiment,
-        "score": score
-    }
-
-@app.post("/advisor/chat")
-async def advisor_chat(request: ChatRequest):
-    # Mock AI advisor logic
-    response = f"Analysing your query: '{request.message}'. Given your {request.user_context.get('riskAppetite', 'Moderate')} risk profile, I recommend..."
-    return {"response": response}
+    return {"message": "FinCopilot AI Microservice is running"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)

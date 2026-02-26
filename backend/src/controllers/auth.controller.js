@@ -1,45 +1,60 @@
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 
-// Mock user database
-const users = [];
+const authController = {
+    signup: async (req, res, next) => {
+        try {
+            const { name, email, password, riskAppetite } = req.body;
 
-exports.signup = async (req, res) => {
-    try {
-        const { name, email, password, riskAppetite } = req.body;
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                return res.status(400).json({ success: false, message: 'User already exists' });
+            }
 
-        // Check if user exists
-        if (users.find(u => u.email === email)) {
-            return res.status(400).json({ message: 'User already exists' });
+            const user = new User({ name, email, password, riskAppetite });
+            await user.save();
+
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+            res.status(201).json({
+                success: true,
+                token,
+                user: { id: user._id, name: user.name, email: user.email, riskAppetite: user.riskAppetite }
+            });
+        } catch (error) {
+            next(error);
         }
+    },
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = { id: Date.now().toString(), name, email, password: hashedPassword, riskAppetite };
-        users.push(newUser);
+    login: async (req, res, next) => {
+        try {
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
 
-        const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+            if (!user || !(await user.comparePassword(password))) {
+                return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
 
-        const { password: _, ...userWithoutPassword } = newUser;
-        res.status(201).json({ user: userWithoutPassword, token });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+            res.json({
+                success: true,
+                token,
+                user: { id: user._id, name: user.name, email: user.email, riskAppetite: user.riskAppetite }
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getMe: async (req, res, next) => {
+        try {
+            const user = await User.findById(req.user.id).select('-password');
+            res.json({ success: true, user });
+        } catch (error) {
+            next(error);
+        }
     }
 };
 
-exports.login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = users.find(u => u.email === email);
-
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-        const { password: _, ...userWithoutPassword } = user;
-        res.json({ user: userWithoutPassword, token });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-};
+module.exports = authController;
