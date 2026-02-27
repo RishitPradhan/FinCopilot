@@ -1,0 +1,377 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNotificationStore } from '@/store/useNotificationStore';
+import { useMetaMask } from '@/hooks/useMetaMask';
+import api from '@/services/api';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { TrendingUp, Loader2, Mail, Lock, User, ChevronRight, Wallet } from 'lucide-react';
+
+export default function AuthPage() {
+    const [isLoading, setIsLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
+    const { setAuth } = useAuthStore();
+    const { addNotification } = useNotificationStore();
+    const { connect: connectMetaMask, isConnecting: isMetaMaskConnecting, error: metaMaskError, reset: resetMetaMask } = useMetaMask();
+    const router = useRouter();
+
+    // Form states
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        riskAppetite: 'Moderate' as 'Beginner' | 'Moderate' | 'Aggressive'
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.id.replace('signup-', '')]: e.target.value });
+    };
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            const response = await api.post('/auth/login', {
+                email: formData.email,
+                password: formData.password
+            });
+            const { user, token } = response.data;
+            setAuth(user, token);
+            addNotification('success', `Welcome back, ${user.name}!`);
+            router.push('/dashboard');
+        } catch (error: any) {
+            addNotification('error', error.response?.data?.message || 'Login failed. Please check your credentials.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSignup = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            const response = await api.post('/auth/signup', formData);
+            const { user, token } = response.data;
+            setAuth(user, token);
+            addNotification('success', 'Account created successfully!');
+            router.push('/dashboard');
+        } catch (error: any) {
+            addNotification('error', error.response?.data?.message || 'Signup failed. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleMetaMask = async () => {
+        resetMetaMask();
+        const result = await connectMetaMask();
+        if (result) {
+            setAuth(result.user as any, result.token);
+            const addr = result.address;
+            addNotification('success', `Wallet connected: ${addr.slice(0, 6)}…${addr.slice(-4)}`);
+            router.push('/dashboard');
+        }
+    };
+
+    const handleDevBypass = () => {
+        const mockUser: any = {
+            id: '69a04a42080b05c1d9f4',
+            name: 'Wizard (Dev)',
+            email: 'wizard@fincopilot.com',
+            riskAppetite: 'Moderate'
+        };
+        setAuth(mockUser, 'dev-token');
+        addNotification('info', 'Dev Mode: Logged in as Wizard');
+        router.push('/dashboard');
+    };
+
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-black text-white selection:bg-white selection:text-black">
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-3xl opacity-20" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/5 rounded-full blur-3xl opacity-20" />
+            </div>
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="w-full max-w-md relative z-10"
+            >
+                <div className="mb-12 flex flex-col items-center">
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                    >
+                        <TrendingUp className="text-black w-8 h-8" />
+                    </motion.div>
+                    <h1 className="text-4xl font-bold tracking-tighter mb-2">FinCopilot</h1>
+                    <p className="text-neutral-500 text-sm font-medium uppercase tracking-widest">Intelligent Financial Analysis</p>
+                </div>
+
+                <Card className="bg-black border-neutral-800 shadow-2xl overflow-hidden backdrop-blur-sm bg-black/40">
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 bg-neutral-900/50 p-1">
+                            <TabsTrigger
+                                value="login"
+                                className="data-[state=active]:bg-white data-[state=active]:text-black transition-all duration-300"
+                            >
+                                Login
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="signup"
+                                className="data-[state=active]:bg-white data-[state=active]:text-black transition-all duration-300"
+                            >
+                                Sign Up
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, x: activeTab === 'login' ? -20 : 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: activeTab === 'login' ? 20 : -20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <TabsContent value="login" className="mt-0 border-none outline-none">
+                                    <form onSubmit={handleLogin} className="p-4 space-y-4">
+                                        <CardHeader className="px-0 pt-4">
+                                            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+                                            <CardDescription className="text-neutral-500">
+                                                Enter your credentials to continue your analysis.
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="px-0 space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="email" className="text-neutral-400 text-xs uppercase tracking-wider">Email Address</Label>
+                                                <div className="relative">
+                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                                                    <Input
+                                                        id="email"
+                                                        type="email"
+                                                        placeholder="name@example.com"
+                                                        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-700 focus:ring-1 focus:ring-white transition-all h-11"
+                                                        value={formData.email}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <Label htmlFor="password" title="password" className="text-neutral-400 text-xs uppercase tracking-wider">Password</Label>
+                                                    <button type="button" className="text-[10px] text-neutral-500 hover:text-white transition-colors uppercase tracking-wider font-bold">Forgot Password?</button>
+                                                </div>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                                                    <Input
+                                                        id="password"
+                                                        type="password"
+                                                        placeholder="••••••••"
+                                                        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-700 focus:ring-1 focus:ring-white transition-all h-11"
+                                                        value={formData.password}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="px-0 pb-2">
+                                            <Button
+                                                className="w-full bg-white text-black hover:bg-neutral-200 font-bold h-11 group"
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <span className="flex items-center justify-center">
+                                                        Log In <ChevronRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </CardFooter>
+                                    </form>
+                                </TabsContent>
+
+                                <TabsContent value="signup" className="mt-0 border-none outline-none">
+                                    <form onSubmit={handleSignup} className="p-4 space-y-4">
+                                        <CardHeader className="px-0 pt-4">
+                                            <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
+                                            <CardDescription className="text-neutral-500">
+                                                Start your journey to financial intelligence.
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="px-0 space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="signup-name" className="text-neutral-400 text-xs uppercase tracking-wider">Full Name</Label>
+                                                <div className="relative">
+                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                                                    <Input
+                                                        id="signup-name"
+                                                        placeholder="John Doe"
+                                                        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-700 focus:ring-1 focus:ring-white transition-all h-11"
+                                                        value={formData.name}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="signup-email" className="text-neutral-400 text-xs uppercase tracking-wider">Email Address</Label>
+                                                <div className="relative">
+                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                                                    <Input
+                                                        id="signup-email"
+                                                        type="email"
+                                                        placeholder="name@example.com"
+                                                        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-700 focus:ring-1 focus:ring-white transition-all h-11"
+                                                        value={formData.email}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="signup-password" title="password" className="text-neutral-400 text-xs uppercase tracking-wider">Password</Label>
+                                                <div className="relative">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                                                    <Input
+                                                        id="signup-password"
+                                                        type="password"
+                                                        placeholder="••••••••"
+                                                        className="pl-10 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-700 focus:ring-1 focus:ring-white transition-all h-11"
+                                                        value={formData.password}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="risk-appetite" className="text-neutral-400 text-xs uppercase tracking-wider">Risk Appetite</Label>
+                                                <Select
+                                                    value={formData.riskAppetite}
+                                                    onValueChange={(v: any) => setFormData({ ...formData, riskAppetite: v })}
+                                                >
+                                                    <SelectTrigger id="risk-appetite" className="bg-neutral-900 border-neutral-800 text-white focus:ring-white h-11">
+                                                        <SelectValue placeholder="Select risk level" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-neutral-950 border-neutral-800 text-white">
+                                                        <SelectItem value="Beginner" className="focus:bg-white focus:text-black">Beginner (Safety First)</SelectItem>
+                                                        <SelectItem value="Moderate" className="focus:bg-white focus:text-black">Moderate (Balanced)</SelectItem>
+                                                        <SelectItem value="Aggressive" className="focus:bg-white focus:text-black">Aggressive (Growth)</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <p className="text-[10px] text-neutral-600 mt-1 uppercase font-semibold">Tailors AI recommendations.</p>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="px-0 pb-2">
+                                            <Button
+                                                className="w-full bg-white text-black hover:bg-neutral-200 font-bold h-11 group"
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <span className="flex items-center justify-center">
+                                                        Create Account <ChevronRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </CardFooter>
+                                    </form>
+                                </TabsContent>
+                            </motion.div>
+                        </AnimatePresence>
+                    </Tabs>
+                </Card>
+
+                {/* MetaMask Connect Section */}
+                <div className="mt-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px bg-neutral-800" />
+                        <span className="text-[10px] text-neutral-600 uppercase tracking-widest font-bold whitespace-nowrap">Or connect wallet</span>
+                        <div className="flex-1 h-px bg-neutral-800" />
+                    </div>
+                    <Button
+                        type="button"
+                        onClick={handleMetaMask}
+                        disabled={isMetaMaskConnecting}
+                        className="w-full h-11 font-bold text-sm relative overflow-hidden border border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-orange-400/5 text-orange-400 hover:text-white hover:from-orange-500/30 hover:to-orange-400/20 hover:border-orange-400/60 transition-all duration-300 group"
+                        variant="ghost"
+                    >
+                        {isMetaMaskConnecting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <span className="flex items-center justify-center gap-2">
+                                {/* MetaMask Fox Icon (inline SVG) */}
+                                <svg width="20" height="20" viewBox="0 0 318.6 318.6" className="shrink-0" aria-hidden="true">
+                                    <polygon fill="#E2761B" stroke="#E2761B" strokeLinecap="round" strokeLinejoin="round" points="274.1,35.5 174.6,109.4 193,65.8" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="44.4,35.5 143.1,110.1 125.6,65.8" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="238.3,206.8 211.8,247.4 268.5,263 284.8,207.7" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="33.9,207.7 50.1,263 106.8,247.4 80.3,206.8" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="103.6,138.2 87.8,162.1 144.1,164.6 142.1,104.1" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="214.9,138.2 175.9,103.4 174.6,164.6 230.8,162.1" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="106.8,247.4 140.6,230.9 111.4,208.1" />
+                                    <polygon fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round" points="177.9,230.9 211.8,247.4 207.1,208.1" />
+                                </svg>
+                                <span>Connect with MetaMask</span>
+                                <Wallet className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
+                            </span>
+                        )}
+                    </Button>
+
+                    {metaMaskError && (
+                        <motion.p
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-[11px] text-red-400 text-center px-2 leading-relaxed"
+                        >
+                            ⚠ {metaMaskError}
+                        </motion.p>
+                    )}
+
+                    <Button
+                        variant="ghost"
+                        onClick={handleDevBypass}
+                        className="w-full text-neutral-600 hover:text-white hover:bg-neutral-900/50 text-[10px] uppercase tracking-[0.2em] font-black h-9 border border-neutral-900/50"
+                    >
+                        Skip for Development →
+                    </Button>
+                </div>
+
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-8 text-[10px] text-neutral-600 text-center uppercase tracking-widest font-bold max-w-[280px] mx-auto leading-relaxed"
+                >
+                    By continuing, you agree to FinCopilot's <span className="text-neutral-400 cursor-pointer hover:text-white transition-colors">Terms of Service</span> and <span className="text-neutral-400 cursor-pointer hover:text-white transition-colors">Privacy Policy</span>.
+                </motion.p>
+            </motion.div>
+        </div>
+    );
+}
