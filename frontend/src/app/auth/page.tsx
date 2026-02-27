@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -25,7 +25,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { TrendingUp, Loader2, Mail, Lock, User, ChevronRight } from 'lucide-react';
+import { TrendingUp, Loader2, Mail, Lock, User, ChevronRight, Wallet } from 'lucide-react';
+import { useMetaMask } from '@/hooks/useMetaMask';
 
 export default function AuthPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +34,15 @@ export default function AuthPage() {
     const { setAuth } = useAuthStore();
     const { addNotification } = useNotificationStore();
     const router = useRouter();
+    const metamask = useMetaMask();
+
+    // Read ?mode=login from URL to set initial tab
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode');
+        if (mode === 'login') setActiveTab('login');
+        else if (mode === 'signup') setActiveTab('signup');
+    }, []);
 
     // Form states
     const [formData, setFormData] = useState({
@@ -91,6 +101,15 @@ export default function AuthPage() {
         setAuth(mockUser, 'dev-token');
         addNotification('info', 'Dev Mode: Logged in as Wizard');
         router.push('/dashboard');
+    };
+
+    const handleMetaMask = async () => {
+        const result = await metamask.connect();
+        if (result) {
+            setAuth(result.user as any, result.token);
+            addNotification('success', `Connected with MetaMask: ${result.address.slice(0, 6)}...${result.address.slice(-4)}`);
+            router.push('/dashboard');
+        }
     };
 
     return (
@@ -296,7 +315,37 @@ export default function AuthPage() {
                     </Tabs>
                 </Card>
 
-                <div className="mt-4">
+                {/* Separator */}
+                <div className="flex items-center gap-4 my-5">
+                    <div className="flex-1 h-px bg-neutral-800" />
+                    <span className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-bold">or continue with</span>
+                    <div className="flex-1 h-px bg-neutral-800" />
+                </div>
+
+                {/* MetaMask Button */}
+                <Button
+                    variant="outline"
+                    onClick={handleMetaMask}
+                    disabled={metamask.isConnecting}
+                    className="w-full bg-[#f6851b]/5 border-[#f6851b]/20 hover:bg-[#f6851b]/10 hover:border-[#f6851b]/40 text-white font-bold h-12 rounded-xl transition-all duration-300 group"
+                >
+                    <div className="flex items-center justify-center gap-3">
+                        {metamask.isConnecting ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-[#f6851b]" />
+                        ) : (
+                            <Wallet className="w-5 h-5 text-[#f6851b] group-hover:scale-110 transition-transform" />
+                        )}
+                        <span className="text-sm font-black uppercase tracking-wider">
+                            {metamask.isConnecting ? 'Connecting...' : 'Connect MetaMask'}
+                        </span>
+                    </div>
+                </Button>
+
+                {metamask.error && (
+                    <p className="text-xs text-red-400 text-center font-medium mt-2">{metamask.error}</p>
+                )}
+
+                <div className="mt-3">
                     <Button
                         variant="ghost"
                         onClick={handleDevBypass}
