@@ -30,11 +30,12 @@ git push -u origin main
 1. Go to https://www.mongodb.com/cloud/atlas
 2. Create a free cluster
 3. Get your connection string (looks like: `mongodb+srv://username:password@cluster.mongodb.net/fincopilot`)
+4. **IMPORTANT**: Whitelist all IPs (0.0.0.0/0) in Network Access
 
 ### 2.2 Deploy Backend to Vercel
 1. Go to https://vercel.com/new
 2. Import your repository
-3. **Root Directory**: Set to `backend`
+3. **Root Directory**: Set to `FinCopilot/backend`
 4. **Framework Preset**: Other
 5. **Build Command**: Leave empty
 6. **Output Directory**: Leave empty
@@ -67,7 +68,7 @@ NEXT_PUBLIC_API_URL=https://your-backend.vercel.app
 ### 3.2 Deploy Frontend to Vercel
 1. Go to https://vercel.com/new
 2. Import the same repository
-3. **Root Directory**: Set to `frontend`
+3. **Root Directory**: Set to `FinCopilot/frontend`
 4. **Framework Preset**: Next.js (auto-detected)
 5. **Build Command**: `npm run build`
 6. **Output Directory**: `.next`
