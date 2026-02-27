@@ -2,30 +2,50 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, sparse: true }, // optional for wallet users
-    password: { type: String }, // optional for wallet users
-    walletAddress: { type: String, unique: true, sparse: true, lowercase: true },
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        sparse: true
+    },
+    password: {
+        type: String,
+        select: false
+    },
+    walletAddress: {
+        type: String,
+        lowercase: true,
+        sparse: true,
+        unique: true
+    },
     riskAppetite: {
         type: String,
         enum: ['beginner', 'moderate', 'aggressive'],
         default: 'moderate'
     },
-    iqScore: { type: Number, default: 50 },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
-// Hash password before saving (only if password is set/modified)
-userSchema.pre('save', async function () {
-    if (!this.isModified('password') || !this.password) return;
-    this.password = await bcrypt.hash(this.password, 10);
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) return next();
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
-// Compare password
-userSchema.methods.comparePassword = async function (candidatePassword) {
-    if (!this.password) return false;
+// Method to compare passwords
+userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);
-
