@@ -3,8 +3,6 @@
 *.log
 .env
 .env.*
-**/.env
-**/.env.*
 
 # Node / Frontend / Backend
 node_modules/

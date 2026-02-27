@@ -37,150 +37,132 @@ const COLORS = ['#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#525252'
 export default function DeepDivePage() {
     const [activeTab, setActiveTab] = useState<'sectors' | 'industries' | 'earnings'>('sectors');
 
-    const SECTOR_COLORS = ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#059669', '#065f46'];
-
     return (
-        <div className="space-y-12 animate-in fade-in duration-700 no-scrollbar pb-20">
-            <div className="flex flex-col space-y-4 border-b border-white/5 pb-10">
-                <h1 className="text-6xl font-black text-white flex items-center tracking-tighter italic uppercase">
-                    Deep<span className="text-white/20 ml-2">Dive</span>
+        <div className="space-y-8 animate-in fade-in duration-500 no-scrollbar pb-12">
+            <div className="flex flex-col space-y-2">
+                <h1 className="text-3xl font-bold text-white flex items-center">
+                    <Microscope className="mr-3 h-8 w-8 text-white" />
+                    Deep Dive Analysis
                 </h1>
-                <p className="text-gray-600 font-black uppercase tracking-[0.3em] text-[10px]">Granular Market Intelligence & Alpha Synthesis Hierarchies</p>
+                <p className="text-gray-500">Granular market intelligence and performance metrics across all hierarchies.</p>
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex space-x-4 p-2 bg-white/[0.02] border border-white/5 rounded-[24px] w-fit backdrop-blur-3xl shadow-2xl">
+            <div className="flex space-x-4 p-1 bg-secondary/30 rounded-xl w-fit border border-border">
                 <Button
                     variant="ghost"
                     onClick={() => setActiveTab('sectors')}
                     className={cn(
-                        "rounded-[20px] px-8 h-12 transition-all duration-500 font-black uppercase tracking-widest text-[10px]",
-                        activeTab === 'sectors' ? "bg-white text-black hover:bg-white shadow-xl" : "text-gray-600 hover:text-white hover:bg-white/5"
+                        "rounded-lg px-6 transition-all duration-300",
+                        activeTab === 'sectors' ? "bg-white text-black hover:bg-white" : "text-gray-400 hover:text-white"
                     )}
                 >
-                    Sectors
+                    All Sectors
                 </Button>
                 <Button
                     variant="ghost"
                     onClick={() => setActiveTab('industries')}
                     className={cn(
-                        "rounded-[20px] px-8 h-12 transition-all duration-500 font-black uppercase tracking-widest text-[10px]",
-                        activeTab === 'industries' ? "bg-white text-black hover:bg-white shadow-xl" : "text-gray-600 hover:text-white hover:bg-white/5"
+                        "rounded-lg px-6 transition-all duration-300",
+                        activeTab === 'industries' ? "bg-white text-black hover:bg-white" : "text-gray-400 hover:text-white"
                     )}
                 >
-                    Industries
+                    All Industries
                 </Button>
                 <Button
                     variant="ghost"
                     onClick={() => setActiveTab('earnings')}
                     className={cn(
-                        "rounded-[20px] px-8 h-12 transition-all duration-500 font-black uppercase tracking-widest text-[10px]",
-                        activeTab === 'earnings' ? "bg-white text-black hover:bg-white shadow-xl" : "text-gray-600 hover:text-white hover:bg-white/5"
+                        "rounded-lg px-6 transition-all duration-300",
+                        activeTab === 'earnings' ? "bg-white text-black hover:bg-white" : "text-gray-400 hover:text-white"
                     )}
                 >
-                    Earnings
+                    Earnings Summary
                 </Button>
             </div>
 
             {/* Content Views */}
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {activeTab === 'sectors' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                        <Card className="lg:col-span-3 premium-card h-[550px] flex flex-col group">
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                            <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
-                                <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">Sector Momentum</CardTitle>
-                                <p className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] mt-1">Relative performance weightage</p>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <Card className="bg-card border-border shadow-2xl h-[450px]">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-bold text-white">Sector Performance</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex-1 flex items-center justify-center p-10">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <CardContent className="h-full flex items-center justify-center">
+                                <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
                                         <Pie
                                             data={sectorData}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={80}
-                                            outerRadius={140}
-                                            paddingAngle={8}
+                                            innerRadius={60}
+                                            outerRadius={100}
+                                            paddingAngle={5}
                                             dataKey="value"
-                                            stroke="none"
                                         >
                                             {sectorData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={SECTOR_COLORS[index % SECTOR_COLORS.length]} className="hover:opacity-80 transition-opacity cursor-pointer" />
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: '#000',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                borderRadius: '16px',
-                                                color: '#fff',
-                                                backdropFilter: 'blur(20px)',
-                                                padding: '16px'
-                                            }}
-                                            itemStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '12px' }}
+                                            contentStyle={{ backgroundColor: '#000', border: '1px solid #222', color: '#fff' }}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </CardContent>
                         </Card>
 
-                        <div className="lg:col-span-2 space-y-6">
-                            <h3 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2 mb-4">Allocation Details</h3>
-                            <div className="grid grid-cols-1 gap-4">
+                        <Card className="bg-card border-border shadow-2xl overflow-hidden">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-bold text-white">Sector Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
                                 {sectorData.map((sector, i) => (
-                                    <div key={i} className="group p-6 bg-white/[0.02] border border-white/5 rounded-[24px] flex items-center justify-between hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300">
-                                        <div className="flex items-center space-x-5">
-                                            <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: SECTOR_COLORS[i % SECTOR_COLORS.length] }} />
-                                            <div>
-                                                <span className="text-sm font-black text-white uppercase tracking-tight block">{sector.name}</span>
-                                                <span className="text-[9px] text-gray-600 font-black uppercase tracking-widest">Active Alpha</span>
-                                            </div>
+                                    <div key={i} className="flex items-center justify-between p-4 bg-secondary/20 rounded-xl border border-border/50">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                            <span className="text-sm font-medium text-white">{sector.name}</span>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xl font-black text-white italic font-mono">{sector.value}%</div>
+                                            <div className="text-sm font-bold text-white">{sector.value}%</div>
                                             <div className={cn(
-                                                "text-[9px] font-black uppercase tracking-widest",
-                                                sector.change.startsWith('+') ? "text-emerald-500" : "text-rose-500"
+                                                "text-[10px] font-bold uppercase",
+                                                sector.change.startsWith('+') ? "text-white" : "text-gray-500"
                                             )}>{sector.change}</div>
                                         </div>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
 
                 {activeTab === 'industries' && (
-                    <Card className="premium-card overflow-hidden">
-                        <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
-                            <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">Industry Alpha</CardTitle>
-                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] mt-1">Cross-industry performance synthesis</p>
+                    <Card className="bg-card border-border shadow-2xl overflow-hidden">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold text-white">Industry Analysis</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="bg-white/[0.01] border-white/5">
-                                    <TableRow className="border-white/5 hover:bg-transparent px-8 h-14">
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] pl-8">Industry Node</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right">Asset Count</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right">Momentum Vector</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right pr-8">Top Performer</TableHead>
+                                <TableHeader className="border-border hover:bg-transparent">
+                                    <TableRow className="border-border hover:bg-transparent">
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px]">Industry</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Stocks</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Avg Change</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Top Stock</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {industryData.map((item, i) => (
-                                        <TableRow key={i} className="border-white/5 hover:bg-white/[0.02] transition-colors group h-16">
-                                            <TableCell className="font-black text-white uppercase tracking-tight pl-8">{item.industry}</TableCell>
-                                            <TableCell className="text-right text-gray-500 font-black font-mono text-xs">{item.stocks}</TableCell>
+                                        <TableRow key={i} className="border-border hover:bg-secondary/20 transition-colors">
+                                            <TableCell className="font-medium text-white">{item.industry}</TableCell>
+                                            <TableCell className="text-right text-gray-400 font-mono">{item.stocks}</TableCell>
                                             <TableCell className={cn(
-                                                "text-right font-black italic tracking-tighter text-sm transition-transform group-hover:translate-x-1",
-                                                item.change.startsWith('+') ? "text-emerald-500" : "text-rose-500"
+                                                "text-right font-bold",
+                                                item.change.startsWith('+') ? "text-white" : "text-gray-500"
                                             )}>{item.change}</TableCell>
-                                            <TableCell className="text-right pr-8">
-                                                <span className="px-5 py-1.5 bg-white text-black font-black uppercase tracking-widest text-[9px] rounded-full shadow-lg">
-                                                    {item.topStock}
-                                                </span>
-                                            </TableCell>
+                                            <TableCell className="text-right text-white font-bold">{item.topStock}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -190,32 +172,27 @@ export default function DeepDivePage() {
                 )}
 
                 {activeTab === 'earnings' && (
-                    <Card className="premium-card overflow-hidden">
-                        <CardHeader className="bg-white/[0.02] border-b border-white/5 p-8">
-                            <CardTitle className="text-xl font-black text-white italic uppercase tracking-tighter">Earnings Intelligence</CardTitle>
-                            <p className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] mt-1">Institutional-grade financial reporting summary</p>
+                    <Card className="bg-card border-border shadow-2xl overflow-hidden">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold text-white">Latest Earnings Reports</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="bg-white/[0.01] border-white/5">
-                                    <TableRow className="border-white/5 hover:bg-transparent h-14">
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] pl-8">Asset Entity</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right">Synthesized Revenue</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right">Net Alpha Surplus</TableHead>
-                                        <TableHead className="text-gray-700 font-black uppercase tracking-widest text-[9px] text-right pr-8">Growth Velocity</TableHead>
+                                <TableHeader className="border-border hover:bg-transparent">
+                                    <TableRow className="border-border hover:bg-transparent">
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px]">Company</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Revenue</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Profit</TableHead>
+                                        <TableHead className="text-gray-500 font-bold uppercase text-[10px] text-right">Growth %</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {earningsData.map((item, i) => (
-                                        <TableRow key={i} className="border-white/5 hover:bg-white/[0.02] transition-colors h-16">
-                                            <TableCell className="font-black text-white italic uppercase tracking-tighter pl-8">{item.company}</TableCell>
-                                            <TableCell className="text-right text-gray-500 font-black font-mono text-xs">{item.revenue}</TableCell>
-                                            <TableCell className="text-right text-white font-black font-mono text-xs">{item.profit}</TableCell>
-                                            <TableCell className="text-right pr-8">
-                                                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-black italic text-[10px] tracking-widest uppercase">
-                                                    {item.growth}
-                                                </div>
-                                            </TableCell>
+                                        <TableRow key={i} className="border-border hover:bg-secondary/20 transition-colors">
+                                            <TableCell className="font-bold text-white">{item.company}</TableCell>
+                                            <TableCell className="text-right text-gray-400 font-mono">{item.revenue}</TableCell>
+                                            <TableCell className="text-right text-white font-mono">{item.profit}</TableCell>
+                                            <TableCell className="text-right text-white font-bold">{item.growth}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

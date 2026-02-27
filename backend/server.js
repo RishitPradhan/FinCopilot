@@ -45,6 +45,11 @@ app.get('/health', (req, res) => res.json({ status: 'OK', database: mongoose.con
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
+// Export for Vercel Serverless Functions
+module.exports = app;

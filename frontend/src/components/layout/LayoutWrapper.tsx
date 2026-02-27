@@ -21,11 +21,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="flex h-screen bg-black overflow-hidden selection:bg-white selection:text-black">
+        <div className="flex h-screen bg-black overflow-hidden">
             <Sidebar />
-            <div className="flex flex-col flex-1 overflow-hidden bg-black">
+            <div className="flex flex-col flex-1 overflow-hidden">
                 <Navbar />
-                <main className="flex-1 overflow-y-auto p-8 relative no-scrollbar bg-black">
+                <main className="flex-1 overflow-y-auto p-8 relative no-scrollbar">
                     <div className="max-w-7xl mx-auto w-full">
                         {children}
                     </div>

@@ -42,110 +42,25 @@ export function LandingNav() {
                         { name: 'Analysis', href: '/analysis' },
                         { name: 'Markets', href: '/dashboard' },
                     ].map((item) => (
-                        <motion.div
+                        <Link
                             key={item.name}
-                            whileHover="hover"
-                            initial="initial"
+                            href={item.href}
+                            className="text-sm font-black tracking-widest text-white/60 hover:text-white transition-colors uppercase"
                         >
-                            <Link
-                                href={item.href}
-                                className="text-[11px] font-black tracking-[0.2em] text-white/50 hover:text-white transition-colors uppercase relative py-2"
-                            >
-                                <motion.span
-                                    variants={{
-                                        initial: { letterSpacing: "0.2em" },
-                                        hover: { letterSpacing: "0.3em" }
-                                    }}
-                                    transition={{ duration: 0.4, ease: "circOut" }}
-                                >
-                                    {item.name}
-                                </motion.span>
-                                <motion.div
-                                    className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-white/40 origin-left"
-                                    variants={{
-                                        initial: { scaleX: 0 },
-                                        hover: { scaleX: 1 }
-                                    }}
-                                    transition={{ duration: 0.4, ease: "circOut" }}
-                                />
-                            </Link>
-                        </motion.div>
+                            {item.name}
+                        </Link>
                     ))}
                 </div>
 
-                <div className="hidden md:flex items-center gap-6">
-                    <motion.div whileHover="hover" initial="initial">
-                        <Link href="/auth">
-                            <Button variant="ghost" className="text-white/50 hover:text-white hover:bg-transparent font-black tracking-[0.3em] uppercase text-[10px] relative h-auto py-2 group">
-                                <motion.span
-                                    variants={{
-                                        initial: { letterSpacing: "0.3em" },
-                                        hover: { letterSpacing: "0.45em" }
-                                    }}
-                                    transition={{ duration: 0.5, ease: "circOut" }}
-                                >
-                                    Login
-                                </motion.span>
-                                <motion.div
-                                    className="absolute -bottom-1 left-0 right-0 h-[1px] bg-white/20 origin-left"
-                                    variants={{
-                                        initial: { scaleX: 0 },
-                                        hover: { scaleX: 1, backgroundColor: "rgba(255,255,255,0.8)" }
-                                    }}
-                                    transition={{ duration: 0.5, ease: "circOut" }}
-                                />
-                            </Button>
-                        </Link>
-                    </motion.div>
-
+                <div className="hidden md:flex items-center gap-4">
                     <Link href="/auth">
-                        <motion.div
-                            whileHover="hover"
-                            initial="initial"
-                            whileTap="tap"
-                            className="relative"
-                        >
-                            <motion.div
-                                variants={{
-                                    hover: { scale: 1.05 },
-                                    tap: { scale: 0.95 }
-                                }}
-                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                            >
-                                <Button className="bg-white text-black hover:bg-white font-black tracking-[0.2em] uppercase text-[10px] rounded-full px-8 py-5 flex items-center gap-3 transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)] group overflow-hidden relative">
-                                    <span className="relative z-10 flex items-center">
-                                        Register
-                                        <motion.div
-                                            variants={{
-                                                hover: { x: 5 }
-                                            }}
-                                            transition={{ type: "spring", stiffness: 300 }}
-                                        >
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </motion.div>
-                                    </span>
-
-                                    {/* Shimmer */}
-                                    <motion.div
-                                        variants={{
-                                            hover: { x: "150%" }
-                                        }}
-                                        initial={{ x: "-150%" }}
-                                        transition={{ duration: 1, ease: "easeInOut" }}
-                                        className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-black/[0.08] to-transparent skew-x-[35deg]"
-                                    />
-                                </Button>
-                            </motion.div>
-
-                            {/* Glow */}
-                            <motion.div
-                                variants={{
-                                    hover: { opacity: 0.3, scale: 1.1 }
-                                }}
-                                initial={{ opacity: 0, scale: 1 }}
-                                className="absolute inset-0 bg-white/20 blur-2xl -z-10 rounded-full"
-                            />
-                        </motion.div>
+                        <Button variant="ghost" className="text-white/60 hover:text-white font-black tracking-widest uppercase text-xs">Login</Button>
+                    </Link>
+                    <Link href="/auth">
+                        <Button className="bg-white text-black hover:bg-neutral-200 font-black tracking-widest uppercase text-xs rounded-full px-6 flex items-center gap-2 transition-transform active:scale-95 group">
+                            Register
+                            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </Button>
                     </Link>
                 </div>
 

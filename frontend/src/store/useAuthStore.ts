@@ -6,7 +6,6 @@ interface User {
     name: string;
     email: string;
     riskAppetite: 'Beginner' | 'Moderate' | 'Aggressive';
-    role?: string;
 }
 
 interface AuthState {
@@ -22,8 +21,7 @@ const MOCK_USER: User = {
     id: '69a04a42080b05c1d9f4',
     name: 'Wizard (Dev)',
     email: 'wizard@fincopilot.com',
-    riskAppetite: 'Moderate',
-    role: 'Wizard (Dev)'
+    riskAppetite: 'Moderate'
 };
 
 // In development, we can default to a mock user to remove friction

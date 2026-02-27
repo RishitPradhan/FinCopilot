@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -26,23 +26,15 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { TrendingUp, Loader2, Mail, Lock, User, ChevronRight, Wallet } from 'lucide-react';
-import { useMetaMask } from '@/hooks/useMetaMask';
+import { ethers } from 'ethers';
 
 export default function AuthPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [isWalletLoading, setIsWalletLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
     const { setAuth } = useAuthStore();
     const { addNotification } = useNotificationStore();
     const router = useRouter();
-    const metamask = useMetaMask();
-
-    // Read ?mode=login from URL to set initial tab
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const mode = params.get('mode');
-        if (mode === 'login') setActiveTab('login');
-        else if (mode === 'signup') setActiveTab('signup');
-    }, []);
 
     // Form states
     const [formData, setFormData] = useState({
@@ -91,6 +83,39 @@ export default function AuthPage() {
         }
     };
 
+    const handleWalletAuth = async () => {
+        if (!(window as any).ethereum) {
+            addNotification('error', 'Ethereum wallet not found. Please install MetaMask.');
+            return;
+        }
+
+        setIsWalletLoading(true);
+        try {
+            const provider = new ethers.BrowserProvider((window as any).ethereum);
+            const signer = await provider.getSigner();
+            const address = await signer.getAddress();
+
+            const message = `Login to FinCopilot\n\nWallet Address: ${address}\nTimestamp: ${Date.now()}`;
+            const signature = await signer.signMessage(message);
+
+            const response = await api.post('/auth/metamask', {
+                address,
+                message,
+                signature
+            });
+
+            const { user, token } = response.data;
+            setAuth(user, token);
+            addNotification('success', `Authenticated with wallet: ${address.slice(0, 6)}...${address.slice(-4)}`);
+            router.push('/dashboard');
+        } catch (error: any) {
+            console.error('Wallet auth error:', error);
+            addNotification('error', error.response?.data?.message || 'Wallet authentication failed.');
+        } finally {
+            setIsWalletLoading(false);
+        }
+    };
+
     const handleDevBypass = () => {
         const mockUser: any = {
             id: '69a04a42080b05c1d9f4',
@@ -101,15 +126,6 @@ export default function AuthPage() {
         setAuth(mockUser, 'dev-token');
         addNotification('info', 'Dev Mode: Logged in as Wizard');
         router.push('/dashboard');
-    };
-
-    const handleMetaMask = async () => {
-        const result = await metamask.connect();
-        if (result) {
-            setAuth(result.user as any, result.token);
-            addNotification('success', `Connected with MetaMask: ${result.address.slice(0, 6)}...${result.address.slice(-4)}`);
-            router.push('/dashboard');
-        }
     };
 
     return (
@@ -126,7 +142,7 @@ export default function AuthPage() {
                 transition={{ duration: 0.6 }}
                 className="w-full max-w-md relative z-10"
             >
-                <div className="mb-12 flex flex-col items-center">
+                <div className="mb-8 flex flex-col items-center">
                     <motion.div
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -136,6 +152,30 @@ export default function AuthPage() {
                     </motion.div>
                     <h1 className="text-4xl font-bold tracking-tighter mb-2">FinCopilot</h1>
                     <p className="text-neutral-500 text-sm font-medium uppercase tracking-widest">Intelligent Financial Analysis</p>
+                </div>
+
+                <div className="mb-4">
+                    <Button
+                        variant="outline"
+                        onClick={handleWalletAuth}
+                        disabled={isWalletLoading}
+                        className="w-full bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800 hover:text-white h-12 rounded-xl group relative overflow-hidden transition-all duration-300"
+                    >
+                        {isWalletLoading ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <span className="flex items-center justify-center gap-2 font-bold uppercase tracking-wider text-xs">
+                                <Wallet className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                                Connect with Wallet
+                            </span>
+                        )}
+                        <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                    <div className="flex items-center gap-4 my-6">
+                        <div className="h-px flex-1 bg-neutral-900" />
+                        <span className="text-[10px] text-neutral-600 font-bold uppercase tracking-[0.2em]">or use account</span>
+                        <div className="h-px flex-1 bg-neutral-900" />
+                    </div>
                 </div>
 
                 <Card className="bg-black border-neutral-800 shadow-2xl overflow-hidden backdrop-blur-sm bg-black/40">
@@ -315,37 +355,7 @@ export default function AuthPage() {
                     </Tabs>
                 </Card>
 
-                {/* Separator */}
-                <div className="flex items-center gap-4 my-5">
-                    <div className="flex-1 h-px bg-neutral-800" />
-                    <span className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] font-bold">or continue with</span>
-                    <div className="flex-1 h-px bg-neutral-800" />
-                </div>
-
-                {/* MetaMask Button */}
-                <Button
-                    variant="outline"
-                    onClick={handleMetaMask}
-                    disabled={metamask.isConnecting}
-                    className="w-full bg-[#f6851b]/5 border-[#f6851b]/20 hover:bg-[#f6851b]/10 hover:border-[#f6851b]/40 text-white font-bold h-12 rounded-xl transition-all duration-300 group"
-                >
-                    <div className="flex items-center justify-center gap-3">
-                        {metamask.isConnecting ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-[#f6851b]" />
-                        ) : (
-                            <Wallet className="w-5 h-5 text-[#f6851b] group-hover:scale-110 transition-transform" />
-                        )}
-                        <span className="text-sm font-black uppercase tracking-wider">
-                            {metamask.isConnecting ? 'Connecting...' : 'Connect MetaMask'}
-                        </span>
-                    </div>
-                </Button>
-
-                {metamask.error && (
-                    <p className="text-xs text-red-400 text-center font-medium mt-2">{metamask.error}</p>
-                )}
-
-                <div className="mt-3">
+                <div className="mt-4">
                     <Button
                         variant="ghost"
                         onClick={handleDevBypass}
