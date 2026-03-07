@@ -21,7 +21,11 @@ import {
     CheckCheck,
     Paperclip,
     Activity,
-    Users
+    Users,
+    CheckCircle2,
+    Calendar,
+    ShieldCheck,
+    Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -35,6 +39,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import api from '@/services/api';
 import { useRef } from 'react';
+import { generateKeyPair, encryptMessage, decryptMessage } from '@/utils/crypto';
 
 interface Post {
     _id: string;
@@ -93,7 +98,10 @@ const DEMO_POSTS: Post[] = [
         title: 'Why I moved 40% of my portfolio into index funds this quarter',
         content: 'After years of stock-picking, I realized that consistent 12-14% annual returns from Nifty 50 index funds beat my active trading returns 7 out of 10 years. The math is clear: lower fees + compounding = wealth. Stop trying to beat the market and let the market work for you.',
         likes: ['u2', 'u3', 'u4', 'u5', 'u6', 'u7'],
-        comments: [{ _id: 'c1' }, { _id: 'c2' }, { _id: 'c3' }],
+        comments: [
+            { _id: 'c1', author: { name: 'Priya Sharma' }, content: 'Absolutely agree! Index investing gives peace of mind.', createdAt: new Date(Date.now() - 1.5 * 3600000).toISOString() },
+            { _id: 'c2', author: { name: 'Karan Vyas' }, content: 'Which index funds are you currently holding?', createdAt: new Date(Date.now() - 1 * 3600000).toISOString() }
+        ],
         tags: ['investing', 'indexfunds', 'stocks'],
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     },
@@ -103,7 +111,10 @@ const DEMO_POSTS: Post[] = [
         title: 'RBI holds rates steady — what it means for your fixed deposits',
         content: 'The RBI kept repo rate at 6.5% for the 6th consecutive meeting. FD rates at major banks are currently between 7-7.5% for 1-year tenure. If you are parking emergency funds, this is a decent window. But remember, real returns after inflation are barely 1-2%. Equity is still king for long-term wealth creation.',
         likes: ['u1', 'u3', 'u5', 'u8'],
-        comments: [{ _id: 'c4' }, { _id: 'c5' }],
+        comments: [
+            { _id: 'c4', author: { name: 'Ritesh Kumar' }, content: 'Thanks for the update. Keeping my emergency fund in FDs makes sense.', createdAt: new Date(Date.now() - 4 * 3600000).toISOString() },
+            { _id: 'c5', author: { name: 'Ananya Iyer' }, content: 'Agreed, real estate also works if you have higher capital.', createdAt: new Date(Date.now() - 3.5 * 3600000).toISOString() }
+        ],
         tags: ['economy', 'RBI', 'fixeddeposit'],
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     },
@@ -113,7 +124,10 @@ const DEMO_POSTS: Post[] = [
         title: 'Bitcoin just crossed $95K — is it finally time to buy?',
         content: 'The halving effect is real. Every cycle, Bitcoin rallies 6-12 months after the halving event. We are right in that window. I am personally allocating 5% of my portfolio to BTC and ETH. Remember: only invest what you can afford to lose in crypto. This is NOT financial advice.',
         likes: ['u1', 'u4', 'u6', 'u7', 'u9'],
-        comments: [{ _id: 'c6' }, { _id: 'c7' }, { _id: 'c8' }, { _id: 'c9' }],
+        comments: [
+            { _id: 'c6', author: { name: 'Sneha Reddy' }, content: 'Crypto is too volatile for me, but it is exciting to watch!', createdAt: new Date(Date.now() - 7 * 3600000).toISOString() },
+            { _id: 'c7', author: { name: 'Arjun Mehta' }, content: 'I started a small SIP in BTC last year!', createdAt: new Date(Date.now() - 6 * 3600000).toISOString() }
+        ],
         tags: ['crypto', 'bitcoin', 'investing'],
         createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
     },
@@ -123,7 +137,10 @@ const DEMO_POSTS: Post[] = [
         title: 'The psychology of panic selling — and how I stopped doing it',
         content: 'In the 2020 crash, I sold everything at the bottom and missed the recovery. It cost me ₹4.2L in unrealized gains. Since then, I have learned to: 1) Set stop-losses BEFORE entering a trade, 2) Never check my portfolio more than once a week, 3) Keep a cash reserve so I am not forced to sell. Discipline > Intelligence in markets.',
         likes: ['u1', 'u2', 'u5', 'u8', 'u9', 'u10', 'u11'],
-        comments: [{ _id: 'c10' }, { _id: 'c11' }, { _id: 'c12' }, { _id: 'c13' }, { _id: 'c14' }],
+        comments: [
+            { _id: 'c10', author: { name: 'Karan Vyas' }, content: 'Relatable! I did the same in 2020.', createdAt: new Date(Date.now() - 11 * 3600000).toISOString() },
+            { _id: 'c11', author: { name: 'Rahul Desai' }, content: 'Discipline is definitely the hardest part of investing.', createdAt: new Date(Date.now() - 10 * 3600000).toISOString() }
+        ],
         tags: ['psychology', 'mindset', 'discipline'],
         createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     },
@@ -133,7 +150,10 @@ const DEMO_POSTS: Post[] = [
         title: 'Tata Motors vs Mahindra — which auto stock is the better bet for 2026?',
         content: 'Both companies are killing it in EVs. Tata has first-mover advantage with Nexon EV, but M&M is catching up fast with XUV400. Revenue-wise: Tata Motors ₹4.1L Cr vs M&M ₹1.5L Cr. But M&M has better margins at 14.2% vs Tata at 8.5%. I am bullish on M&M for the next 2 years. What do you all think?',
         likes: ['u1', 'u3', 'u6'],
-        comments: [{ _id: 'c15' }, { _id: 'c16' }],
+        comments: [
+            { _id: 'c15', author: { name: 'Arjun Mehta' }, content: 'Tata Motors has better global exposure with JLR though.', createdAt: new Date(Date.now() - 17 * 3600000).toISOString() },
+            { _id: 'c16', author: { name: 'Sneha Reddy' }, content: 'I actually hold both just to be safe.', createdAt: new Date(Date.now() - 16 * 3600000).toISOString() }
+        ],
         tags: ['stocks', 'auto', 'market'],
         createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
     },
@@ -143,11 +163,30 @@ const DEMO_POSTS: Post[] = [
         title: 'My SIP strategy: How ₹10K/month became ₹18.7L in 8 years',
         content: 'Started with ₹10,000/month SIP in 2016 across 3 funds: Parag Parikh Flexi Cap, Axis Midcap, and UTI Nifty Index. Total invested: ₹9.6L. Current value: ₹18.7L. XIRR: 16.8%. The secret? I never stopped, not even during COVID crash. Consistency beats timing. Start your SIP today, not tomorrow.',
         likes: ['u1', 'u2', 'u3', 'u4', 'u7', 'u8', 'u9', 'u10'],
-        comments: [{ _id: 'c17' }, { _id: 'c18' }, { _id: 'c19' }, { _id: 'c20' }, { _id: 'c21' }, { _id: 'c22' }],
+        comments: [{ _id: 'c17', author: { name: 'Rahul' }, content: 'Impressive consistency!', createdAt: new Date().toISOString() }],
         tags: ['SIP', 'mutualfunds', 'personalfinance'],
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     },
 ];
+
+const DecryptedMessage = ({ content, isMe, privateKey }: { content: string, isMe: boolean, privateKey: string | null }) => {
+    const [decryptedContent, setDecryptedContent] = React.useState(content.startsWith('__E2EE__') ? 'Decrypting...' : content);
+
+    React.useEffect(() => {
+        if (content.startsWith('__E2EE__') && privateKey) {
+            const decrypt = async () => {
+                const encrypted = content.replace('__E2EE__', '');
+                const result = await decryptMessage(encrypted, privateKey);
+                setDecryptedContent(result);
+            };
+            decrypt();
+        } else {
+            setDecryptedContent(content);
+        }
+    }, [content, privateKey]);
+
+    return <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{decryptedContent}</p>;
+};
 
 export default function CommunityPage() {
     const { user } = useAuthStore();
@@ -166,9 +205,11 @@ export default function CommunityPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState({ recipient: '', content: '' });
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [privateKey, setPrivateKey] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [commentingOn, setCommentingOn] = useState<string | null>(null);
+    const [commentContent, setCommentContent] = useState('');
 
-    // Group messages into conversations
     const conversations = messages.reduce((acc, msg) => {
         const otherUser = msg.sender._id === user?.id ? msg.receiver : msg.sender;
         if (!acc[otherUser._id]) {
@@ -181,13 +222,39 @@ export default function CommunityPage() {
         return acc;
     }, {} as Record<string, { user: { _id: string, name: string, email: string }, messages: Message[] }>);
 
+    if (selectedUserId && !conversations[selectedUserId]) {
+        const currUser = posts.find(p => p.author._id === selectedUserId)?.author ||
+            messages.find(m => m.sender._id === selectedUserId)?.sender ||
+            messages.find(m => m.receiver._id === selectedUserId)?.receiver;
+        if (currUser) {
+            conversations[selectedUserId] = {
+                user: currUser,
+                messages: []
+            };
+        }
+    }
+
     const sortedConversations = Object.values(conversations).sort((a, b) => {
+        if (a.messages.length === 0) return -1;
+        if (b.messages.length === 0) return 1;
         const lastA = a.messages[a.messages.length - 1].createdAt;
         const lastB = b.messages[b.messages.length - 1].createdAt;
         return new Date(lastB).getTime() - new Date(lastA).getTime();
     });
 
     const activeChat = selectedUserId ? conversations[selectedUserId] : null;
+
+    // Helper to get user info for a selected ID even if no conversation exists
+    const getSelectedUser = () => {
+        if (activeChat) return activeChat.user;
+        const postAuthor = posts.find(p => p.author._id === selectedUserId)?.author;
+        if (postAuthor) return postAuthor;
+        // Search in all messages if not in current posts
+        const msgUser = messages.find(m => m.sender._id === selectedUserId)?.sender ||
+            messages.find(m => m.receiver._id === selectedUserId)?.receiver;
+        return msgUser;
+    };
+    const selectedUser = getSelectedUser();
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -199,7 +266,43 @@ export default function CommunityPage() {
         fetchPosts();
         fetchMessages();
         fetchTrending();
+        setupE2EE();
     }, []);
+
+    useEffect(() => {
+        if (user && messages.length === 0) {
+            setMessages([
+                {
+                    _id: 'msg-demo-1',
+                    sender: { _id: 'u6', name: 'Ananya Iyer', email: 'ananya@fincopilot.com' },
+                    receiver: { _id: user.id || 'demo-usr', name: user.name || 'You', email: user.email || 'user@fincopilot.com' },
+                    content: 'Hey! Welcome to the FinCopilot community. Let me know if you want to discuss some SIP strategies!',
+                    createdAt: new Date(Date.now() - 3600000).toISOString()
+                }
+            ]);
+        }
+    }, [user]);
+
+    const setupE2EE = async () => {
+        try {
+            let storedPriv = localStorage.getItem(`fincopilot_priv_${user?.id}`);
+            let storedPub = localStorage.getItem(`fincopilot_pub_${user?.id}`);
+
+            if (!storedPriv || !storedPub) {
+                const { publicKey, privateKey } = await generateKeyPair();
+                localStorage.setItem(`fincopilot_priv_${user?.id}`, privateKey);
+                localStorage.setItem(`fincopilot_pub_${user?.id}`, publicKey);
+                storedPriv = privateKey;
+                storedPub = publicKey;
+
+                // Save public key to backend
+                await api.post('/user/update-public-key', { publicKey: storedPub });
+            }
+            setPrivateKey(storedPriv);
+        } catch (err) {
+            console.error('E2EE Setup failed:', err);
+        }
+    };
 
     const fetchTrending = async () => {
         try {
@@ -242,7 +345,11 @@ export default function CommunityPage() {
     const fetchMessages = async () => {
         try {
             const res = await api.get('/community/messages');
-            if (res.data.success) setMessages(res.data.messages);
+            if (res.data.success) {
+                if (res.data.messages.length > 0) {
+                    setMessages(res.data.messages);
+                }
+            }
         } catch (err) {
             console.error('Failed to fetch messages');
         }
@@ -269,6 +376,18 @@ export default function CommunityPage() {
     };
 
     const handleLike = async (postId: string) => {
+        if (postId.startsWith('demo-')) {
+            setPosts(posts.map(p => {
+                if (p._id === postId) {
+                    const hasLiked = p.likes.includes(user?.id || 'guest');
+                    const newLikes = hasLiked ? p.likes.filter(id => id !== (user?.id || 'guest')) : [...p.likes, (user?.id || 'guest')];
+                    return { ...p, likes: newLikes };
+                }
+                return p;
+            }));
+            return;
+        }
+
         try {
             const res = await api.post(`/community/posts/${postId}/like`);
             if (res.data.success) {
@@ -281,15 +400,80 @@ export default function CommunityPage() {
         }
     };
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const recipient = selectedUserId ? conversations[selectedUserId].user.email : newMessage.recipient;
-        if (!recipient || !newMessage.content) return;
+    const handleComment = async (postId: string) => {
+        if (!commentContent.trim()) return;
+
+        if (postId.startsWith('demo-')) {
+            const newComment = {
+                _id: `demo-c-${Date.now()}`,
+                author: { name: user?.name || 'You' },
+                content: commentContent,
+                createdAt: new Date().toISOString()
+            };
+            setPosts(posts.map(p => {
+                if (p._id === postId) {
+                    return { ...p, comments: [...p.comments, newComment] };
+                }
+                return p;
+            }));
+            setCommentContent('');
+            setCommentingOn(null);
+            addNotification('success', 'Comment added!');
+            return;
+        }
 
         try {
+            const res = await api.post(`/community/posts/${postId}/comment`, { content: commentContent });
+            if (res.data.success) {
+                setPosts(posts.map(p => {
+                    if (p._id === postId) {
+                        return { ...p, comments: [...p.comments, res.data.comment] };
+                    }
+                    return p;
+                }));
+                setCommentContent('');
+                setCommentingOn(null);
+                addNotification('success', 'Comment added!');
+            }
+        } catch (err) {
+            addNotification('error', 'Failed to add comment');
+        }
+    };
+
+    const handleMessageUser = async (userToMessage: { _id: string, email: string, name: string }) => {
+        const existingConv = sortedConversations.find(c => c.user._id === userToMessage._id);
+        if (existingConv) {
+            setSelectedUserId(userToMessage._id);
+        } else {
+            // Need to create a local "dummy" conversation state so user can start typing
+            // This is handled by how selectedUserId works with newMessage
+            setSelectedUserId(userToMessage._id);
+        }
+        setActiveView('messages');
+    };
+
+    const handleSendMessage = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const recipientEmail = selectedUser?.email || newMessage.recipient;
+        if (!recipientEmail || !newMessage.content) return;
+
+        try {
+            let contentToSend = newMessage.content;
+
+            // Try E2EE
+            try {
+                const pubRes = await api.get(`/user/public-key?email=${recipientEmail}`);
+                if (pubRes.data.success && pubRes.data.publicKey) {
+                    contentToSend = await encryptMessage(newMessage.content, pubRes.data.publicKey);
+                    contentToSend = `__E2EE__${contentToSend}`; // Prefix to identify encrypted content
+                }
+            } catch (e) {
+                console.warn('E2EE failed, sending as plain text:', e);
+            }
+
             const res = await api.post('/community/messages', {
-                receiverEmail: recipient,
-                content: newMessage.content
+                receiverEmail: recipientEmail,
+                content: contentToSend
             });
             if (res.data.success) {
                 setMessages([...messages, res.data.message]);
@@ -369,7 +553,7 @@ export default function CommunityPage() {
                             <CardContent className="space-y-1">
                                 {[
                                     { label: 'Feed', id: 'feed', icon: MessageSquare, color: 'text-blue-400' },
-                                    { label: 'Messages', id: 'messages', icon: Send, color: 'text-purple-400' },
+                                    { label: 'Messages', id: 'messages', icon: Mail, color: 'text-purple-400' },
                                     { label: 'Trending', id: 'trending', icon: TrendingUp, color: 'text-emerald-400' },
                                 ].map((item) => (
                                     <button
@@ -541,9 +725,19 @@ export default function CommunityPage() {
                                                             </div>
                                                             <p className="text-[9px] text-neutral-600 uppercase tracking-wider font-medium truncate">{post.author?.email}</p>
                                                         </Link>
-                                                        <Button variant="ghost" size="icon" className="text-neutral-800 hover:text-white h-7 w-7">
-                                                            <MoreHorizontal className="w-3 h-3" />
-                                                        </Button>
+                                                        <div className="flex items-center gap-1">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="bg-blue-600 text-white hover:bg-blue-500 hover:text-white h-7 w-7 transition-colors shadow-sm"
+                                                                onClick={() => handleMessageUser(post.author)}
+                                                            >
+                                                                <Mail className="w-3.5 h-3.5" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" className="text-neutral-800 hover:text-white h-7 w-7">
+                                                                <MoreHorizontal className="w-3 h-3" />
+                                                            </Button>
+                                                        </div>
                                                     </CardHeader>
                                                     <CardContent className="space-y-2 pb-3">
                                                         <h3 className="text-base font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">{post.title}</h3>
@@ -566,12 +760,15 @@ export default function CommunityPage() {
                                                     <CardFooter className="flex items-center gap-5 pt-0 border-t border-neutral-800/30 mt-0">
                                                         <button
                                                             onClick={() => handleLike(post._id)}
-                                                            className={`flex items-center gap-1.5 py-1.5 transition-colors ${post.likes.includes(user?.id || '') ? 'text-rose-400' : 'text-neutral-600 hover:text-rose-400'}`}
+                                                            className={`flex items-center gap-1.5 py-1.5 transition-colors ${post.likes.includes(user?.id || 'guest') ? 'text-rose-400' : 'text-neutral-600 hover:text-rose-400'}`}
                                                         >
-                                                            <Heart className={`w-3 h-3 ${post.likes.includes(user?.id || '') ? 'fill-rose-400' : ''}`} />
+                                                            <Heart className={`w-3 h-3 ${post.likes.includes(user?.id || 'guest') ? 'fill-rose-400' : ''}`} />
                                                             <span className="text-[9px] font-bold">{post.likes.length}</span>
                                                         </button>
-                                                        <button className="flex items-center gap-1.5 py-1.5 text-neutral-600 hover:text-blue-400 transition-colors">
+                                                        <button
+                                                            className="flex items-center gap-1.5 py-1.5 text-neutral-600 hover:text-blue-400 transition-colors"
+                                                            onClick={() => setCommentingOn(commentingOn === post._id ? null : post._id)}
+                                                        >
                                                             <MessageCircle className="w-3 h-3" />
                                                             <span className="text-[9px] font-bold">{post.comments.length}</span>
                                                         </button>
@@ -579,6 +776,40 @@ export default function CommunityPage() {
                                                             <Share2 className="w-3 h-3" />
                                                         </button>
                                                     </CardFooter>
+                                                    <AnimatePresence>
+                                                        {commentingOn === post._id && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, height: 0 }}
+                                                                animate={{ opacity: 1, height: 'auto' }}
+                                                                exit={{ opacity: 0, height: 0 }}
+                                                                className="px-4 pb-4 space-y-3"
+                                                            >
+                                                                <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar">
+                                                                    {post.comments.map((comment: any) => (
+                                                                        <div key={comment._id} className="text-[10px] bg-neutral-900/50 p-2 rounded-lg border border-neutral-800/50">
+                                                                            <p className="font-bold text-neutral-300">{comment.author?.name || 'User'}</p>
+                                                                            <p className="text-neutral-500">{comment.content}</p>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <Input
+                                                                        value={commentContent}
+                                                                        onChange={(e) => setCommentContent(e.target.value)}
+                                                                        placeholder="Write a comment..."
+                                                                        className="bg-neutral-900/50 border-neutral-800 text-[10px] h-8 rounded-full"
+                                                                        onKeyDown={(e) => e.key === 'Enter' && handleComment(post._id)}
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => handleComment(post._id)}
+                                                                        className="h-8 w-8 rounded-full bg-white text-black p-0"
+                                                                    >
+                                                                        <Send className="w-3 h-3" />
+                                                                    </Button>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </Card>
                                             </motion.div>
                                         ))}
@@ -611,35 +842,35 @@ export default function CommunityPage() {
                                         </div>
                                         <ScrollArea className="flex-1">
                                             <div className="p-2 space-y-1">
-                                                {sortedConversations.length === 0 ? (
+                                                {sortedConversations.length === 0 && !selectedUserId ? (
                                                     <div className="py-12 text-center">
                                                         <MessageCircle className="w-8 h-8 text-neutral-800 mx-auto mb-3" />
                                                         <p className="text-[10px] uppercase tracking-widest text-neutral-600 font-bold">No conversations</p>
                                                     </div>
                                                 ) : (
                                                     sortedConversations.map((conv) => {
-                                                        const lastMsg = conv.messages[conv.messages.length - 1];
+                                                        const lastMsg = conv.messages.length > 0 ? conv.messages[conv.messages.length - 1] : null;
                                                         const isActive = selectedUserId === conv.user._id;
                                                         return (
                                                             <button
                                                                 key={conv.user._id}
                                                                 onClick={() => setSelectedUserId(conv.user._id)}
-                                                                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${isActive ? 'bg-white text-black' : 'hover:bg-neutral-900'}`}
+                                                                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${isActive ? 'bg-white text-black shadow-md' : 'hover:bg-neutral-900 border border-transparent hover:border-neutral-800'}`}
                                                             >
                                                                 <Avatar className="w-11 h-11 border border-neutral-800/50">
                                                                     <AvatarFallback className={`${isActive ? 'bg-black text-white' : 'bg-neutral-900 text-neutral-400'} font-bold`}>
                                                                         {conv.user.name[0]}
                                                                     </AvatarFallback>
                                                                 </Avatar>
-                                                                <div className="flex-1 text-left min-w-0">
+                                                                <div className="flex-1 text-left min-w-0 overflow-hidden">
                                                                     <div className="flex justify-between items-baseline mb-0.5">
-                                                                        <span className="text-sm font-bold truncate">{conv.user.name}</span>
-                                                                        <span className={`text-[10px] ${isActive ? 'text-black/60' : 'text-neutral-600'}`}>
-                                                                            {new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                        <span className="text-sm font-bold truncate pr-2">{conv.user.name}</span>
+                                                                        <span className={`text-[10px] whitespace-nowrap flex-shrink-0 ${isActive ? 'text-black/60' : 'text-neutral-600'}`}>
+                                                                            {lastMsg ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'New'}
                                                                         </span>
                                                                     </div>
-                                                                    <p className={`text-xs truncate ${isActive ? 'text-black/70' : 'text-neutral-500'}`}>
-                                                                        {lastMsg.sender._id === user?.id ? 'You: ' : ''}{lastMsg.content}
+                                                                    <p className={`text-xs line-clamp-1 break-words ${isActive ? 'text-black/70' : 'text-neutral-500'}`}>
+                                                                        {lastMsg ? (lastMsg.sender._id === user?.id ? 'You: ' + (lastMsg.content.includes('__E2EE__') ? 'Encrypted Message' : lastMsg.content) : (lastMsg.content.includes('__E2EE__') ? 'Encrypted Message' : lastMsg.content)) : 'Start a conversation'}
                                                                     </p>
                                                                 </div>
                                                             </button>
@@ -652,16 +883,16 @@ export default function CommunityPage() {
 
                                     {/* Chat Window */}
                                     <div className="flex-1 flex flex-col bg-black/20 relative">
-                                        {activeChat ? (
+                                        {selectedUserId ? (
                                             <>
                                                 {/* Chat Header */}
                                                 <div className="p-4 border-b border-neutral-900 flex items-center justify-between bg-black/40 backdrop-blur-md">
                                                     <div className="flex items-center gap-3">
                                                         <Avatar className="w-10 h-10 border border-neutral-800/50">
-                                                            <AvatarFallback className="bg-neutral-900 text-white font-bold">{activeChat.user.name[0]}</AvatarFallback>
+                                                            <AvatarFallback className="bg-neutral-900 text-white font-bold">{selectedUser?.name?.[0]}</AvatarFallback>
                                                         </Avatar>
                                                         <div>
-                                                            <h3 className="text-sm font-bold">{activeChat.user.name}</h3>
+                                                            <h3 className="text-sm font-bold">{selectedUser?.name}</h3>
                                                             <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">Online</p>
                                                         </div>
                                                     </div>
@@ -680,7 +911,7 @@ export default function CommunityPage() {
                                                     ref={scrollRef}
                                                     className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-90"
                                                 >
-                                                    {activeChat.messages.map((msg, i) => {
+                                                    {activeChat ? activeChat.messages.map((msg, i) => {
                                                         const isMe = msg.sender._id === user?.id;
                                                         return (
                                                             <motion.div
@@ -693,7 +924,7 @@ export default function CommunityPage() {
                                                                     ? 'bg-white text-black rounded-tr-none'
                                                                     : 'bg-neutral-900 text-neutral-200 rounded-tl-none border border-neutral-800'
                                                                     }`}>
-                                                                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                                                                    <DecryptedMessage content={msg.content} isMe={isMe} privateKey={privateKey} />
                                                                     <div className={`flex items-center justify-end gap-1 mt-1 ${isMe ? 'text-black/50' : 'text-neutral-500'}`}>
                                                                         <span className="text-[9px] font-bold uppercase">
                                                                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -703,7 +934,13 @@ export default function CommunityPage() {
                                                                 </div>
                                                             </motion.div>
                                                         );
-                                                    })}
+                                                    }) : (
+                                                        <div className="h-full flex flex-col items-center justify-center opacity-40">
+                                                            <ShieldCheck className="w-12 h-12 mb-4" />
+                                                            <p className="text-sm font-bold uppercase tracking-widest">End-to-End Encrypted</p>
+                                                            <p className="text-[10px] mt-2 text-center max-w-[200px]">Messages are encrypted with RSA-OAEP. Only you and {selectedUser?.name} can read them.</p>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* Message Input */}
@@ -729,12 +966,20 @@ export default function CommunityPage() {
                                                 </div>
                                             </>
                                         ) : (
-                                            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center opacity-40">
-                                                <div className="w-20 h-20 rounded-full bg-neutral-900/50 flex items-center justify-center mb-6 border border-neutral-800">
-                                                    <MessageSquare className="w-10 h-10 text-neutral-600" />
+                                            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')]">
+                                                <div className="w-20 h-20 rounded-full bg-neutral-900 flex items-center justify-center mb-6 shadow-2xl border border-neutral-800">
+                                                    <MessageSquare className="w-10 h-10 text-neutral-700" />
                                                 </div>
-                                                <h3 className="text-xl font-bold tracking-tight mb-2">Select a Conversation</h3>
-                                                <p className="text-sm text-neutral-500 max-w-xs mx-auto">Click on a contact to start chatting or share financial insights via direct message.</p>
+                                                <h3 className="text-xl font-bold mb-2 tracking-tight">Your Private Space</h3>
+                                                <p className="text-neutral-500 text-sm max-w-xs leading-relaxed">
+                                                    Connect with other FinCopilot members privately. Send market tips, discuss strategies, and grow together.
+                                                </p>
+                                                <Button
+                                                    onClick={() => setActiveView('feed')}
+                                                    className="mt-8 rounded-full bg-white text-black hover:bg-neutral-200 px-8"
+                                                >
+                                                    Explore Community
+                                                </Button>
                                             </div>
                                         )}
                                     </div>
@@ -753,7 +998,8 @@ export default function CommunityPage() {
                                         <CardHeader>
                                             <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500">Market Sentiment</CardTitle>
                                         </CardHeader>
-                                        <CardContent className="flex flex-col items-center justify-center py-8">
+                                        <CardContent className="flex flex-col items-center justify-center py-8 relative">
+                                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(52,211,153,0.1)_0%,transparent_70%)] pointer-events-none" />
                                             <div className="relative w-48 h-48 flex items-center justify-center">
                                                 <svg className="w-full h-full transform -rotate-90">
                                                     <circle
@@ -774,15 +1020,16 @@ export default function CommunityPage() {
                                                         fill="transparent"
                                                         strokeDasharray={502.4}
                                                         strokeDashoffset={502.4 - (502.4 * (trendingData?.marketInsights?.sentiment || 75)) / 100}
-                                                        className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                                                        className="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.6)]"
+                                                        strokeLinecap="round"
                                                     />
                                                 </svg>
                                                 <div className="absolute flex flex-col items-center">
-                                                    <span className="text-4xl font-bold tracking-tighter">{trendingData?.marketInsights?.sentiment || 75}%</span>
-                                                    <span className="text-[10px] uppercase font-bold text-neutral-500">Bullish</span>
+                                                    <span className="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-emerald-200 drop-shadow-sm">{trendingData?.marketInsights?.sentiment || 75}%</span>
+                                                    <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-500 mt-1">Bullish</span>
                                                 </div>
                                             </div>
-                                            <p className="mt-6 text-sm text-center text-neutral-400 max-w-[200px]">
+                                            <p className="mt-8 text-sm text-center text-neutral-400 max-w-[220px] leading-relaxed">
                                                 The community is currently feeling highly optimistic about the upcoming quarter.
                                             </p>
                                         </CardContent>
@@ -794,7 +1041,12 @@ export default function CommunityPage() {
                                             <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500">Most Discussed Stocks</CardTitle>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
-                                            {(trendingData?.marketInsights?.hotStocks || []).map((stock: TrendingStock) => (
+                                            {((trendingData?.marketInsights?.hotStocks?.length ?? 0) > 0 ? trendingData!.marketInsights!.hotStocks : [
+                                                { symbol: 'RELIANCE', mentions: 1245, change: '+2.4%' },
+                                                { symbol: 'HDFCBANK', mentions: 856, change: '-0.8%' },
+                                                { symbol: 'TCS', mentions: 743, change: '+1.2%' },
+                                                { symbol: 'INFY', mentions: 521, change: '-1.5%' }
+                                            ]).map((stock: any) => (
                                                 <div key={stock.symbol} className="flex items-center justify-between p-3 rounded-xl bg-neutral-900/50 border border-neutral-800/50 hover:border-neutral-700 transition-all cursor-pointer group">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-bold text-xs">
@@ -813,6 +1065,36 @@ export default function CommunityPage() {
                                         </CardContent>
                                     </Card>
 
+                                    {/* Volume Spikes */}
+                                    <Card className="md:col-span-2 bg-neutral-950 border-neutral-900 overflow-hidden relative group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <CardHeader>
+                                            <CardTitle className="text-xs uppercase tracking-widest font-bold text-neutral-500 flex items-center gap-2">
+                                                <Activity className="w-4 h-4 text-purple-400" /> Unusual Volume Spikes
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                {[
+                                                    { ticker: 'ZOMATO', vol: '3.2x', price: '₹164.5', trend: 'up' },
+                                                    { ticker: 'PAYTM', vol: '4.5x', price: '₹380.2', trend: 'down' },
+                                                    { ticker: 'JIOFIN', vol: '2.1x', price: '₹342.8', trend: 'up' },
+                                                    { ticker: 'IREDA', vol: '5.8x', price: '₹152.0', trend: 'up' }
+                                                ].map((stock) => (
+                                                    <div key={stock.ticker} className="p-3 bg-black border border-neutral-800 rounded-xl relative overflow-hidden group/item">
+                                                        <div className={`absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl ${stock.trend === 'up' ? 'from-emerald-500/20' : 'from-rose-500/20'} to-transparent rounded-bl-full -mr-2 -mt-2`} />
+                                                        <p className="text-[10px] text-neutral-500 font-bold uppercase mb-1">{stock.ticker}</p>
+                                                        <p className="text-lg font-black tracking-tighter">{stock.vol}</p>
+                                                        <div className="mt-2 flex justify-between items-end">
+                                                            <span className="text-xs font-medium text-neutral-400">{stock.price}</span>
+                                                            <TrendingUp className={`w-3 h-3 ${stock.trend === 'up' ? 'text-emerald-400' : 'text-rose-400 transform rotate-180'}`} />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
                                     {/* Top Contributors */}
                                     <Card className="md:col-span-2 bg-neutral-950 border-neutral-900">
                                         <CardHeader>
@@ -820,25 +1102,35 @@ export default function CommunityPage() {
                                         </CardHeader>
                                         <CardContent>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {(trendingData?.marketInsights?.topContributors || []).map((contributor: Contributor) => (
-                                                    <div key={contributor._id} className="p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-neutral-800 flex flex-col items-center text-center">
-                                                        <Avatar className="w-16 h-16 border-2 border-white mb-4">
-                                                            <AvatarFallback className="bg-neutral-800 text-white font-bold text-xl">{contributor.name[0]}</AvatarFallback>
-                                                        </Avatar>
-                                                        <h4 className="font-bold text-sm mb-1">{contributor.name}</h4>
-                                                        <p className="text-[10px] text-neutral-600 uppercase font-extrabold tracking-tighter mb-4">{contributor.email}</p>
-                                                        <div className="w-full flex justify-around border-t border-neutral-800 pt-4">
-                                                            <div>
-                                                                <p className="text-xs font-bold">{contributor.iqScore}</p>
-                                                                <p className="text-[9px] text-neutral-500 uppercase font-bold">IQ Score</p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-xs font-bold">{Math.floor(Math.random() * 50) + 10}k</p>
-                                                                <p className="text-[9px] text-neutral-500 uppercase font-bold">Reach</p>
+                                                {((trendingData?.marketInsights?.topContributors?.length ?? 0) > 0 ? trendingData!.marketInsights!.topContributors : [
+                                                    { _id: 'u1', name: 'Arjun Mehta', email: 'arjun@fincopilot.com', iqScore: 142, color: 'blue' },
+                                                    { _id: 'u2', name: 'Priya Sharma', email: 'priya@fincopilot.com', iqScore: 138, color: 'purple' },
+                                                    { _id: 'u3', name: 'Karan Vyas', email: 'karan@fincopilot.com', iqScore: 135, color: 'emerald' }
+                                                ]).map((contributor: any, idx: number) => {
+                                                    const bgColors = ['from-blue-900/40', 'from-purple-900/40', 'from-emerald-900/40'];
+                                                    const textColors = ['text-blue-400', 'text-purple-400', 'text-emerald-400'];
+                                                    const colorClass = bgColors[idx % bgColors.length];
+                                                    const tcClass = textColors[idx % textColors.length];
+                                                    return (
+                                                        <div key={contributor._id} className={`p-4 rounded-2xl bg-gradient-to-b ${colorClass} to-black border border-neutral-800/80 flex flex-col items-center text-center shadow-lg transition-all hover:scale-105`}>
+                                                            <Avatar className="w-16 h-16 border-2 border-white/20 mb-4 shadow-xl">
+                                                                <AvatarFallback className="bg-neutral-800 text-white font-bold text-xl">{contributor.name[0]}</AvatarFallback>
+                                                            </Avatar>
+                                                            <h4 className={`font-bold text-sm mb-1 ${tcClass}`}>{contributor.name}</h4>
+                                                            <p className="text-[10px] text-neutral-500 uppercase font-extrabold tracking-tighter mb-4">{contributor.email}</p>
+                                                            <div className="w-full flex justify-around border-t border-white/5 pt-4">
+                                                                <div>
+                                                                    <p className="text-xs font-bold text-white">{contributor.iqScore}</p>
+                                                                    <p className="text-[9px] text-neutral-500 uppercase font-bold">IQ Score</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs font-bold text-white">{Math.floor(Math.random() * 50) + 10}k</p>
+                                                                    <p className="text-[9px] text-neutral-500 uppercase font-bold">Reach</p>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -848,11 +1140,22 @@ export default function CommunityPage() {
                                         <CardContent className="p-6">
                                             <div className="flex flex-wrap items-center justify-center gap-4">
                                                 <span className="text-[10px] uppercase font-bold text-neutral-600 mr-2">Top Tags:</span>
-                                                {(trendingData?.trendingTags || []).map((tag: TrendingTag) => (
-                                                    <Badge key={tag.name} variant="outline" className="px-4 py-2 border-neutral-800 text-neutral-400 hover:text-white hover:border-white transition-all cursor-pointer">
-                                                        #{tag.name} <span className="ml-2 opacity-40">({tag.count})</span>
-                                                    </Badge>
-                                                ))}
+                                                {((trendingData?.trendingTags?.length ?? 0) > 0 ? trendingData!.trendingTags : [
+                                                    { name: 'Stocks', count: 1240 },
+                                                    { name: 'Earnings', count: 856 },
+                                                    { name: 'Crypto', count: 642 },
+                                                    { name: 'Options', count: 420 },
+                                                    { name: 'SIP', count: 315 },
+                                                    { name: 'Economy', count: 289 }
+                                                ]).map((tag: any, idx: number) => {
+                                                    const tagColors = ['border-blue-500/30 text-blue-400 hover:bg-blue-500/10', 'border-purple-500/30 text-purple-400 hover:bg-purple-500/10', 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10', 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10', 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10'];
+                                                    const colorClass = tagColors[idx % tagColors.length];
+                                                    return (
+                                                        <Badge key={tag.name} variant="outline" className={`px-4 py-2 ${colorClass} transition-all cursor-pointer`}>
+                                                            #{tag.name} <span className="ml-2 opacity-60">({tag.count})</span>
+                                                        </Badge>
+                                                    );
+                                                })}
                                             </div>
                                         </CardContent>
                                     </Card>

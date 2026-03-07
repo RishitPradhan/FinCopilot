@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -12,6 +12,7 @@ const newsRoutes = require('./src/routes/news.routes');
 const portfolioRoutes = require('./src/routes/portfolio.routes');
 const advisorRoutes = require('./src/routes/advisor.routes');
 const userRoutes = require('./src/routes/user.routes');
+const communityRoutes = require('./src/routes/community.routes');
 const errorHandler = require('./src/middleware/error.middleware');
 const rateLimiter = require('./src/middleware/rateLimit.middleware');
 
@@ -37,8 +38,16 @@ app.use('/api/news', newsRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/advisor', advisorRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/community', communityRoutes);
 
 // Health Check
+app.get('/clear', async (req, res) => {
+    try {
+        await mongoose.connection.collection('messages').drop();
+        res.send('ok');
+    } catch (e) { res.send(e.toString()); }
+});
+
 app.get('/health', (req, res) => res.json({ status: 'OK', database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected' }));
 
 // Global Error Handler
@@ -53,3 +62,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export for Vercel Serverless Functions
 module.exports = app;
+

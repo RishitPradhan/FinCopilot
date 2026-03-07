@@ -48,6 +48,33 @@ const userController = {
         } catch (error) {
             next(error);
         }
+    },
+
+    updatePublicKey: async (req, res, next) => {
+        try {
+            const { publicKey } = req.body;
+            await User.findByIdAndUpdate(req.user.id, { publicKey });
+            res.json({ success: true, message: 'Public key updated' });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getPublicKey: async (req, res, next) => {
+        try {
+            const { userId, email } = req.query;
+            let query = {};
+            if (userId) query._id = userId;
+            else if (email) query.email = email;
+            else return res.status(400).json({ success: false, message: 'UserId or email required' });
+
+            const user = await User.findOne(query).select('publicKey name email');
+            if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+            res.json({ success: true, publicKey: user.publicKey, user });
+        } catch (error) {
+            next(error);
+        }
     }
 };
 
