@@ -33,7 +33,7 @@ const advisorController = {
                 { upsert: true, new: true }
             );
 
-            res.json({ success: true, response: aiResponse });
+            res.json({ success: true, message: aiResponse });
         } catch (error) {
             next(error);
         }

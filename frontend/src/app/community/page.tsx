@@ -721,7 +721,7 @@ export default function CommunityPage() {
                                                         <Link href={`/profile/${post.author?._id}`} className="flex-1 group/author min-w-0">
                                                             <div className="flex items-center gap-2 truncate">
                                                                 <CardTitle className="text-[11px] font-bold group-hover/author:text-white transition-colors truncate">{post.author?.name}</CardTitle>
-                                                                <span className="text-neutral-700 text-[9px] whitespace-nowrap">• {new Date(post.createdAt).toLocaleDateString()}</span>
+                                                                <span className="text-neutral-700 text-[9px] whitespace-nowrap">• {new Date(post.createdAt).toLocaleDateString('en-US')}</span>
                                                             </div>
                                                             <p className="text-[9px] text-neutral-600 uppercase tracking-wider font-medium truncate">{post.author?.email}</p>
                                                         </Link>

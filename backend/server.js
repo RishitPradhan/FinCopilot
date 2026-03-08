@@ -19,7 +19,7 @@ const rateLimiter = require('./src/middleware/rateLimit.middleware');
 const app = express();
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/fincopilot')
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/fincopilot')
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
@@ -54,11 +54,9 @@ app.get('/health', (req, res) => res.json({ status: 'OK', database: mongoose.con
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 // Export for Vercel Serverless Functions
 module.exports = app;

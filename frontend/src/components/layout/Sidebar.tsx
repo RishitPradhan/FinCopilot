@@ -21,7 +21,7 @@ import { useAlertStore } from '@/store/useAlertStore';
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Learn', href: '/learn', icon: BookOpen },
-    { name: 'Predict', href: '/predict', icon: TrendingUp },
+    { name: 'Screener', href: '/screener', icon: Microscope },
     { name: 'News', href: '/news', icon: Newspaper, badge: true },
     { name: 'Portfolio', href: '/portfolio', icon: PieChart },
     { name: 'Community', href: '/community', icon: MessageSquare },
@@ -51,7 +51,7 @@ export function Sidebar() {
 
                     return (
                         <Link
-                            key={item.name}
+                            key={item.href}
                             href={item.href}
                             className={cn(
                                 'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 relative',

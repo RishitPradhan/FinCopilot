@@ -265,7 +265,7 @@ export const BotResponse = ({ response, isLoading, onRetry, error }: BotResponse
                         {response.snapshot && (
                             <div className="mt-8 bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden">
                                 <div className="bg-[#242424] px-4 py-3 border-b border-gray-800">
-                                    <h4 className="text-white font-semibold text-sm">Current snapshot (as of {new Date().toLocaleDateString('en-GB')})</h4>
+                                    <h4 className="text-white font-semibold text-sm">Current snapshot (as of {new Date().toLocaleDateString('en-US')})</h4>
                                 </div>
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-[#1a1a1a]">

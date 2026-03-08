@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, BookOpen, Zap, ArrowUpRight, ArrowDownRight, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MarketChart } from './MarketChart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PredictSection } from './PredictSection';
 
 export default function DashboardPage() {
     const { user } = useAuthStore();
@@ -116,58 +118,73 @@ export default function DashboardPage() {
                 ))}
             </div>
 
-            {/* Main Grid Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Market Overview Card */}
-                <Card className="lg:col-span-2 bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden">
-                    <CardHeader className="border-b border-white/5 bg-white/[0.01]">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <CardTitle className="text-xl font-black text-white tracking-tight">Market Overview</CardTitle>
-                                <p className="text-xs text-gray-500 mt-1 font-medium">NIFTY 50 • REAL-TIME PERFORMANCE</p>
-                            </div>
-                            <div className="flex space-x-2">
-                                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">Live</span>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="flex-1 p-6">
-                        <MarketChart />
-                    </CardContent>
-                </Card>
+            {/* Main Grid Content with Tabs */}
+            <Tabs defaultValue="market" className="space-y-8">
+                <div className="flex justify-between items-center">
+                    <TabsList className="bg-black/40 border border-white/5 p-1 h-12 rounded-2xl backdrop-blur-xl">
+                        <TabsTrigger value="market" className="rounded-xl px-8 data-[state=active]:bg-primary data-[state=active]:text-black font-black uppercase tracking-widest text-[10px] transition-all duration-300">Market Feed</TabsTrigger>
+                        <TabsTrigger value="predict" className="rounded-xl px-8 data-[state=active]:bg-primary data-[state=active]:text-black font-black uppercase tracking-widest text-[10px] transition-all duration-300">AI Predictions</TabsTrigger>
+                    </TabsList>
+                </div>
 
-                {/* AI Insights Strip */}
-                <Card className="bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl">
-                    <CardHeader className="border-b border-white/5 bg-white/[0.01]">
-                        <CardTitle className="text-xl font-black text-white flex items-center tracking-tight">
-                            <Zap className="h-5 w-5 text-primary mr-2" />
-                            AI Catalyst
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-1 space-y-4 overflow-y-auto p-6 no-scrollbar">
-                        {[
-                            { title: 'AAPL Consolidation', desc: 'Apple stock is showing signs of consolidation near $190 support.', type: 'Neutral', time: '2h ago' },
-                            { title: 'Tech Sector Surge', desc: 'High momentum detected in AI-related stocks following NVIDIA results.', type: 'Bullish', time: '4h ago' },
-                            { title: 'Interest Rate Impact', desc: 'Fed hints at maintaining rates, potentially impacting bank margins.', type: 'Alert', time: '6h ago' }
-                        ].map((insight, i) => (
-                            <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 cursor-pointer group">
-                                <div className="flex justify-between items-start mb-2">
-                                    <span className={cn(
-                                        "text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter",
-                                        insight.type === 'Bullish' ? "bg-emerald-500/20 text-emerald-400" :
-                                            insight.type === 'Alert' ? "bg-rose-500/20 text-rose-400" : "bg-white/10 text-white"
-                                    )}>{insight.type}</span>
-                                    <span className="text-[9px] font-bold text-gray-600 uppercase">{insight.time}</span>
+                <TabsContent value="market" className="space-y-8 mt-0 border-none p-0 outline-none">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Market Overview Card */}
+                        <Card className="lg:col-span-2 bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl overflow-hidden">
+                            <CardHeader className="border-b border-white/5 bg-white/[0.01]">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <CardTitle className="text-xl font-black text-white tracking-tight">Market Overview</CardTitle>
+                                        <p className="text-xs text-gray-500 mt-1 font-medium">NIFTY 50 • REAL-TIME PERFORMANCE</p>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">Live</span>
+                                    </div>
                                 </div>
-                                <h3 className="text-sm font-bold text-white group-hover:text-primary transition-colors">{insight.title}</h3>
-                                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed font-medium">
-                                    {insight.desc}
-                                </p>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
+                            </CardHeader>
+                            <CardContent className="flex-1 p-6">
+                                <MarketChart />
+                            </CardContent>
+                        </Card>
+
+                        {/* AI Insights Strip */}
+                        <Card className="bg-card/50 border border-white/5 h-[450px] flex flex-col shadow-2xl backdrop-blur-xl">
+                            <CardHeader className="border-b border-white/5 bg-white/[0.01]">
+                                <CardTitle className="text-xl font-black text-white flex items-center tracking-tight">
+                                    <Zap className="h-5 w-5 text-primary mr-2" />
+                                    AI Catalyst
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex-1 space-y-4 overflow-y-auto p-6 no-scrollbar">
+                                {[
+                                    { title: 'AAPL Consolidation', desc: 'Apple stock is showing signs of consolidation near $190 support.', type: 'Neutral', time: '2h ago' },
+                                    { title: 'Tech Sector Surge', desc: 'High momentum detected in AI-related stocks following NVIDIA results.', type: 'Bullish', time: '4h ago' },
+                                    { title: 'Interest Rate Impact', desc: 'Fed hints at maintaining rates, potentially impacting bank margins.', type: 'Alert', time: '6h ago' }
+                                ].map((insight, i) => (
+                                    <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 cursor-pointer group">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={cn(
+                                                "text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter",
+                                                insight.type === 'Bullish' ? "bg-emerald-500/20 text-emerald-400" :
+                                                    insight.type === 'Alert' ? "bg-rose-500/20 text-rose-400" : "bg-white/10 text-white"
+                                            )}>{insight.type}</span>
+                                            <span className="text-[9px] font-bold text-gray-600 uppercase">{insight.time}</span>
+                                        </div>
+                                        <h3 className="text-sm font-bold text-white group-hover:text-primary transition-colors">{insight.title}</h3>
+                                        <p className="text-xs text-gray-500 mt-1.5 leading-relaxed font-medium">
+                                            {insight.desc}
+                                        </p>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="predict" className="mt-0 border-none p-0 outline-none">
+                    <PredictSection />
+                </TabsContent>
+            </Tabs>
 
             {/* AI Insight Strip at bottom */}
             <div className="p-6 rounded-2xl bg-gradient-to-r from-white/5 to-transparent border-none flex items-center justify-between backdrop-blur-sm group transition-colors">
