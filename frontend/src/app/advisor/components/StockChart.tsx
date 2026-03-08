@@ -89,7 +89,7 @@ export const StockChart = ({ stockSymbol = 'BAJFINANCE', data }: StockChartProps
 
     const renderCustomEvent = (props: any) => {
         const { cx, cy, payload } = props;
-        if (!payload.event && !payload.isLightning) return null;
+        if (!payload || (!payload.event && !payload.isLightning)) return null;
 
         return (
             <g>

@@ -2,27 +2,15 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import Spline from '@splinetool/react-spline/next';
 import {
   BrainCircuit,
   ArrowRight,
-  TrendingUp,
-  ShieldCheck,
-  Zap,
-  Globe,
-  Lock,
-  BarChart3,
-  CheckCircle2,
-  PieChart,
-  CandlestickChart,
-  Sparkles,
-  BookOpen
 } from 'lucide-react';
 import { LandingNav } from '@/components/landing/LandingNav';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import Spline from '@splinetool/react-spline/next';
 
 const serifFont = "font-serif";
 const monoFont = "font-mono";
@@ -100,7 +88,7 @@ export default function LandingPage() {
       {/* Hero Section - Full Page Cinematic */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Spline 3D Background */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute inset-0 bg-black/40 z-10 pointer-events-none" />
           <Spline
             scene="https://prod.spline.design/u1z08GYMTIh6kUVN/scene.splinecode"
